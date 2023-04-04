@@ -1,0 +1,11 @@
+@supports (height: 100dvh) {
+  .full-dynamic-viewport-height {
+    height: 100dvh;
+  }
+}
+
+@supports (width: 100dvw) {
+  .full-dynamic-viewport-width {
+    width: 100dvw;
+  }
+}

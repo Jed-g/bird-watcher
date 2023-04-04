@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head data-theme="dark">
+    <title><%= title %></title>
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="/stylesheets/custom.css" />
+    <link rel="manifest" href="/manifest.json">
+    <% scripts.forEach(scriptName => { %>
+    <script src="/javascripts/<%= scriptName %>" defer></script>
+    <% }) %>
+  </head>
+  <body>
+    <div
+      class="h-screen w-screen full-dynamic-viewport-height full-dynamic-viewport-width"
+    >
+      <header
+        class="navbar sm:justify-between justify-center items-center flex bg-base-300"
+      >
+        <ul class="menu menu-horizontal px-1">
+          <li class="mr-1"><a href="/">Home</a></li>
+          <li class="mx-1"><a href="/post">Post</a></li>
+        </ul>
+        <a href="/" class="btn btn-ghost hidden sm:inline-flex mr-0.5"
+          ><p class="text-xl">Bird Watcher™</p></a
+        >
+      </header>
