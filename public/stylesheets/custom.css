@@ -9,3 +9,7 @@
     width: 100dvw;
   }
 }
+
+svg path {
+  fill: currentColor!important;
+}

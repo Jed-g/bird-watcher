@@ -1,8 +1,8 @@
 {
   "name": "Bird Watcher™",
   "short_name": "Bird Watcher™",
-  "theme_color": "#2d666d",
-  "background_color": "#2d666d",
+  "theme_color": "#1EB854",
+  "background_color": "#1EB854",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
