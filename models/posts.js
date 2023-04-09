@@ -4,7 +4,8 @@ const getModel = (connection) => {
   const PostSchema = new mongoose.Schema({
     description: { type: String, default: "" },
     date: { type: Date, default: Date.now },
-    chat: [{ authorNickname: String, message: String }],
+    userNickname: { type: String, required: true },
+    chat: [{ userNickname: String, message: String }],
   });
 
   const Post = connection.model("Post", PostSchema, "posts");

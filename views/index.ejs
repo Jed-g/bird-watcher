@@ -37,6 +37,29 @@
       </li>
     </ul>
   </div>
-  <div class="grow w-full"></div>
+  <div class="grow flex justify-center w-full">
+    <div class="overflow-x-auto w-11/12">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Identification</th>
+            <th>Time seen</th>
+            <th>User</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hidden" id="initial-row">
+            <td>UNKNOWN</td>
+            <td></td>
+            <td></td>
+            <th>
+              <a class="btn btn-accent btn-sm">Details</a>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 <%- include('partials/footer'); -%>

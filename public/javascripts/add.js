@@ -73,10 +73,10 @@ $("#form").submit(async (e) => {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ date, description, timeZoneOffset }),
+    body: JSON.stringify({ date, description, timeZoneOffset, nickname }),
   };
 
-  const response = await fetch("/add", requestOptions);
+  const response = await fetch("/api/add", requestOptions);
 
   if (!response.ok) {
     document.querySelector("#form button").style.backgroundColor = "red";
