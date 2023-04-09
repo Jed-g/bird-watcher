@@ -2,7 +2,9 @@ const getModel = (connection) => {
   const mongoose = require("mongoose");
 
   const PostSchema = new mongoose.Schema({
-    property_1: { type: String },
+    description: { type: String, default: "" },
+    date: { type: Date, default: Date.now },
+    chat: [{ authorNickname: String, message: String }],
   });
 
   const Post = connection.model("Post", PostSchema, "posts");

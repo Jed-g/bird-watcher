@@ -1,5 +1,31 @@
 <%- include('partials/header'); -%>
-<div class="w-full">
-  
+<div class="w-full flex justify-center">
+  <form class="w-full max-w-md p-4 mt-6" id="form">
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Date & Time Of Bird Sighting</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Select Date & Time"
+        id="date"
+        class="input input-bordered w-full"
+        readonly
+      />
+    </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Bird Sighting Description</span>
+      </label>
+      <textarea
+        id="description"
+        class="textarea textarea-bordered h-24"
+        placeholder="Enter description..."
+      ></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">
+      <p class="text-lg">Submit</p>
+    </button>
+  </form>
 </div>
 <%- include('partials/footer'); -%>

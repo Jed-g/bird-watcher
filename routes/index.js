@@ -33,8 +33,38 @@ router.get("/add", (req, res) => {
   res.render("add", {
     page: req.url,
     title: "Add Bird Sighting",
-    scripts: ["index.js"],
+    scripts: ["add.js"],
   });
+});
+
+router.post("/add", async (req, res) => {
+  const {
+    date: dateString,
+    description,
+    timeZoneOffset: clientTimeZoneOffset,
+  } = req.body;
+
+  if (!dateString || !description) {
+    res.status(400).json({ message: "BAD REQUEST" });
+    return;
+  }
+
+  // Store time in DB in UTC timezone
+  const date = new Date(dateString);
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  date.setMinutes(date.getMinutes() + clientTimeZoneOffset);
+
+  const post = new Post({
+    date,
+    description,
+  });
+
+  try {
+    await post.save();
+    res.redirect("/");
+  } catch (error) {
+    res.status(400).json({ status: "BAD REQUEST" });
+  }
 });
 
 module.exports = router;
