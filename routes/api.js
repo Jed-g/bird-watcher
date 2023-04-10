@@ -71,9 +71,9 @@ router.get("/post", async (req, res) => {
 
 router.post("/message", async (req, res) => {
   try {
-    const { postId, message, nickname } = req.body;
+    const { postId, message, nickname, date } = req.body;
     const post = await Post.findById(postId);
-    post.chat.push({ userNickname: nickname, message, date: new Date() });
+    post.chat.push({ userNickname: nickname, message, date: new Date(date) });
     post.chat.sort((a, b) => a.date - b.date);
     post.save();
     res.json({ status: "OK" });

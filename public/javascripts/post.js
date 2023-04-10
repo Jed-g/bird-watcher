@@ -99,7 +99,12 @@ const handleMessageSubmit = async () => {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId: params.id, message, nickname }),
+      body: JSON.stringify({
+        postId: params.id,
+        message,
+        nickname,
+        date: new Date(),
+      }),
     };
 
     const response = await fetch("/api/message", requestOptions);

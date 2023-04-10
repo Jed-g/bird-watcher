@@ -51,6 +51,123 @@ onactivate = (e) => {
   self.clients.claim();
 };
 
+const addToObjectStore = (data, storeName) => {
+  return new Promise((resolve) => {
+    const dbOpenRequest = indexedDB.open("birdWatcher");
+
+    dbOpenRequest.onupgradeneeded = () => {
+      const db = dbOpenRequest.result;
+
+      if (!db.objectStoreNames.contains("nickname")) {
+        db.createObjectStore("nickname", { keyPath: "nickname" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnline")) {
+        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
+      }
+    };
+
+    dbOpenRequest.onsuccess = () => {
+      const db = dbOpenRequest.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      store.put(data);
+      transaction.oncomplete = () => {
+        resolve();
+        db.close();
+      };
+    };
+  });
+};
+
+const getAllFromObjectStore = (storeName) => {
+  return new Promise((resolve) => {
+    const dbOpenRequest = indexedDB.open("birdWatcher");
+
+    dbOpenRequest.onupgradeneeded = () => {
+      const db = dbOpenRequest.result;
+
+      if (!db.objectStoreNames.contains("nickname")) {
+        db.createObjectStore("nickname", { keyPath: "nickname" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnline")) {
+        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
+      }
+    };
+
+    dbOpenRequest.onsuccess = () => {
+      const db = dbOpenRequest.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        resolve(request.result);
+        db.close();
+      };
+    };
+  });
+};
+
+const clearObjectStore = (storeName) => {
+  return new Promise((resolve) => {
+    const dbOpenRequest = indexedDB.open("birdWatcher");
+
+    dbOpenRequest.onupgradeneeded = () => {
+      const db = dbOpenRequest.result;
+
+      if (!db.objectStoreNames.contains("nickname")) {
+        db.createObjectStore("nickname", { keyPath: "nickname" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnline")) {
+        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
+      }
+    };
+
+    dbOpenRequest.onsuccess = () => {
+      const db = dbOpenRequest.result;
+      const transaction = db.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      const request = store.clear();
+
+      request.onsuccess = () => {
+        resolve();
+        db.close();
+      };
+    };
+  });
+};
+
+const sync = async () => {
+  console.log("syncing");
+
+  const syncWhenOnline = await getAllFromObjectStore("syncWhenOnline");
+
+  syncWhenOnline.forEach((obj) => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(obj),
+    };
+
+    fetch("/api/add", requestOptions);
+  });
+
+  await clearObjectStore("syncWhenOnline");
+  const clients_ = await clients.matchAll({ type: "window" });
+  clients_.forEach((client) => {
+    client.postMessage("reload");
+  });
+};
+
+onmessage = (e) => {
+  if (e.data === "online") {
+    sync();
+  }
+};
+
 const handleRecent = async (request) => {
   if (navigator.onLine) {
     return fetch(request);
@@ -60,11 +177,16 @@ const handleRecent = async (request) => {
 };
 
 const handleAdd = async (request) => {
-  if (navigator.onLine) {
-    return fetch(request);
-  } else {
-    console.log("currently offline");
+  let requestClone = request.clone();
+  let response;
+  try {
+    response = await fetch(request);
+  } catch (error) {
+    const data = await requestClone.json();
+    await addToObjectStore(data, "syncWhenOnline");
+    response = Response.redirect("/");
   }
+  return response;
 };
 
 const handleViewPost = async (request) => {

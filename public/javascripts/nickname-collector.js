@@ -1,5 +1,17 @@
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
+
+  window.addEventListener("online", () => {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.active.postMessage("online");
+    });
+  });
+
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data === "reload") {
+      window.location.reload();
+    }
+  });
 }
 
 const getNickname = () => {
@@ -11,6 +23,10 @@ const getNickname = () => {
 
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnline")) {
+        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
       }
     };
 
@@ -41,6 +57,10 @@ const setNickname = (newNickname) => {
 
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnline")) {
+        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
       }
     };
 
