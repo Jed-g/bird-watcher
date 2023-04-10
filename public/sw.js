@@ -20,6 +20,10 @@ const handleViewPost = async (request) => {
   return fetch(request);
 };
 
+const handleSendMessage = async (request) => {
+  return fetch(request);
+};
+
 onfetch = (e) => {
   const url = new URL(e.request.url);
   const target = url.pathname;
@@ -34,6 +38,8 @@ onfetch = (e) => {
           return handleAdd(e.request);
         case "/api/post":
           return handleViewPost(e.request);
+        case "/api/message":
+          return handleSendMessage(e.request);
         default:
           return fetch(e.request);
       }

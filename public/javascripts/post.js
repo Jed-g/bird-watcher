@@ -88,13 +88,24 @@ const insertDataIntoDOM = ({
   loadChatMessages(chat);
 };
 
-const handleMessageSubmit = () => {
+const handleMessageSubmit = async () => {
   const message = $("#send-message").val();
   $("#send-message").val("");
 
   if (message.length > 0 && nickname.length > 0) {
     socket.emit("message", { postId: params.id, message, nickname });
-    loadNewChatMessage({ message, nickname });
+
+    // There has to be a seperate HTTP request since service workers cannot normally intercept web sockets
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId: params.id, message, nickname }),
+    };
+
+    const response = await fetch("/api/message", requestOptions);
+    if (response.ok) {
+      loadNewChatMessage({ message, nickname });
+    }
   }
 };
 
