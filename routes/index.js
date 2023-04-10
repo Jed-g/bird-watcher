@@ -25,4 +25,12 @@ router.get("/add", (req, res) => {
   });
 });
 
+router.get("/post", (req, res) => {
+  res.render("post", {
+    page: req.url,
+    title: "View Bird Sighting",
+    scripts: ["post.js"],
+  });
+});
+
 module.exports = router;

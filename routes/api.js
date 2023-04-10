@@ -59,4 +59,14 @@ router.post("/add", async (req, res) => {
   }
 });
 
+router.get("/post", async (req, res) => {
+  try {
+    const id = req.query.id;
+    const post = await Post.findById(id);
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ status: "INTERNAL SERVER ERROR" });
+  }
+});
+
 module.exports = router;

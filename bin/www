@@ -92,4 +92,4 @@ const io = require("socket.io")(server, {
   pingTimeout: 60000,
 });
 const socket_module = require("../controllers/socket-io");
-socket_module.init(io, app);
+socket_module.init(io);

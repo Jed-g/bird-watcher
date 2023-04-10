@@ -57,24 +57,32 @@ const setNickname = (newNickname) => {
   });
 };
 
+const handleSave = () => {
+  const newNickname = $("#nickname-collector input").val();
+
+  if (newNickname.length <= 0) {
+    $("#nickname-collector button").css(
+      "background-color",
+      "rgb(248, 114, 114)"
+    );
+    $("#nickname-collector button").css("color", "rgb(71, 0, 0)");
+  } else {
+    $("#nickname-collector").hide();
+
+    setNickname(newNickname);
+  }
+};
+
 try {
   await getNickname();
 } catch (error) {
   $("#nickname-collector").css("display", "flex");
 
-  $("#nickname-collector button").click(() => {
-    const newNickname = $("#nickname-collector input").val();
-
-    if (newNickname.length <= 0) {
-      $("#nickname-collector button").css(
-        "background-color",
-        "rgb(248, 114, 114)"
-      );
-      $("#nickname-collector button").css("color", "rgb(71, 0, 0)");
-    } else {
-      $("#nickname-collector").hide();
-
-      setNickname(newNickname);
+  $("#nickname-collector button").click(handleSave);
+  $("#nickname-collector input").keydown((e) => {
+    if (e.key === "Enter") {
+      handleSave();
+      return false;
     }
   });
 }

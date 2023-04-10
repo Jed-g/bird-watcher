@@ -5,7 +5,7 @@ const getModel = (connection) => {
     description: { type: String, default: "" },
     date: { type: Date, default: Date.now },
     userNickname: { type: String, required: true },
-    chat: [{ userNickname: String, message: String }],
+    chat: [{ userNickname: String, message: String, date: Date }],
   });
 
   const Post = connection.model("Post", PostSchema, "posts");

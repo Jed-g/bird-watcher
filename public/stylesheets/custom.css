@@ -13,3 +13,17 @@
 body {
   overflow-x: hidden;
 }
+
+.divider {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.divider-horizontal {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.chat-min-height {
+  min-height: 6rem;
+}

@@ -1,0 +1,85 @@
+<%- include('partials/header'); -%>
+<div class="grow w-full flex flex-col p-4">
+  <div class="bg-base-300 rounded-box grow p-4 sm:hidden">
+    <p class="text-sm brightness-75 mb-1">Date &amp; Time Seen</p>
+    <p id="date-mobile"></p>
+  </div>
+  <div class="divider sm:hidden"></div>
+  <div class="flex">
+    <div class="bg-base-300 rounded-box grow p-4">
+      <p class="text-sm brightness-75 mb-1">Identification</p>
+      <p id="identification">UNKNOWN</p>
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="bg-base-300 rounded-box grow p-4 hidden sm:block">
+      <p class="text-sm brightness-75 mb-1">Date &amp; Time Seen</p>
+      <p id="date-desktop"></p>
+    </div>
+    <div class="divider divider-horizontal hidden sm:flex"></div>
+    <div class="bg-base-300 rounded-box grow p-4">
+      <p class="text-sm brightness-75 mb-1">User</p>
+      <p id="user"></p>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="flex flex-col sm:flex-row">
+    <div class="flex flex-col items-center sm:w-3/5">
+      <img
+        id="image"
+        src="https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/model_gw/aventador/2023/02_09_refresh/aven_gate_s_04_m.jpg"
+        alt="Bird Image"
+        class="object-contain rounded-box max-h-96"
+      />
+      <div class="divider sm:hidden"></div>
+      <div class="bg-base-300 rounded-box p-4 sm:hidden w-full">
+        <p class="text-sm brightness-75 mb-1">Description</p>
+        <p class="description"></p>
+      </div>
+      <div class="divider"></div>
+      <div class="bg-base-300 rounded-box p-4 w-full">
+        <p class="text-sm brightness-75 mb-1">Chat</p>
+        <div id="chat" class="chat-min-height max-h-64 my-4 overflow-scroll">
+          <div class="chat chat-start hidden">
+            <div class="chat-header message-author"></div>
+            <div class="chat-bubble message"></div>
+            <div class="chat-footer opacity-50 message-time"></div>
+          </div>
+          <div class="chat chat-end hidden">
+            <div class="chat-header message-author"></div>
+            <div class="chat-bubble message"></div>
+            <div class="chat-footer opacity-50 message-time"></div>
+          </div>
+        </div>
+        <div class="flex">
+          <input
+            type="text"
+            placeholder="Type message..."
+            class="input input-bordered w-full mr-4"
+            id="send-message"
+          />
+          <button id="send-button" class="btn btn-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="h-6 mr-1"
+            >
+              <path
+                fill="currentColor"
+                d="M4.4 19.425q-.5.2-.95-.088T3 18.5v-3.725q0-.35.2-.625t.55-.35L11 12l-7.25-1.8q-.35-.075-.55-.35T3 9.225V5.5q0-.55.45-.838t.95-.087l15.4 6.5q.625.275.625.925t-.625.925l-15.4 6.5Z"
+              />
+            </svg>
+            <p class="text-lg">Send</p>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="divider divider-horizontal hidden sm:flex"></div>
+    <div class="flex-col grow hidden sm:flex">
+      <div class="bg-base-300 rounded-box p-4">
+        <p class="text-sm brightness-75 mb-1">Description</p>
+        <p class="description"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer'); -%>

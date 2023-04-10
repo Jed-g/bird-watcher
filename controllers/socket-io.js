@@ -1,22 +1,33 @@
+const mongoose = require("mongoose");
+
+const connection = mongoose.createConnection(
+  process.env.MONGODB_CONNECTION_URI
+);
+
+let Post;
+
+connection.once("open", () => {
+  console.log("Connected to Database (Chat API)");
+  Post = require("../models/posts")(connection);
+});
+
 exports.init = (io) => {
   io.sockets.on("connection", (socket) => {
-    console.log("try");
     try {
-      /**
-       * create or joins a room
-       */
-      socket.on("create or join", (room, userId) => {
-        socket.join(room);
-        io.sockets.to(room).emit("joined", room, userId);
+      socket.on("joinRoom", ({ postId }) => {
+        socket.join(postId);
       });
 
-      socket.on("chat", (room, userId, chatText) => {
-        io.sockets.to(room).emit("chat", room, userId, chatText);
-      });
+      socket.on("message", async ({ postId, message, nickname }) => {
+        socket.to(postId).emit("message", { message, nickname });
 
-      socket.on("disconnect", () => {
-        console.log("someone disconnected");
+        const post = await Post.findById(postId);
+        post.chat.push({ userNickname: nickname, message, date: new Date() });
+        post.chat.sort((a, b) => a.date - b.date);
+        post.save();
       });
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   });
 };

@@ -16,6 +16,10 @@ const handleAdd = async (request) => {
   return fetch(request);
 };
 
+const handleViewPost = async (request) => {
+  return fetch(request);
+};
+
 onfetch = (e) => {
   const url = new URL(e.request.url);
   const target = url.pathname;
@@ -28,6 +32,8 @@ onfetch = (e) => {
           return handleRecent(e.request);
         case "/api/add":
           return handleAdd(e.request);
+        case "/api/post":
+          return handleViewPost(e.request);
         default:
           return fetch(e.request);
       }
