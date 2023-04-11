@@ -256,7 +256,7 @@ const clearObjectStore = (storeName) => {
 const sync = async () => {
   console.log("syncing");
 
-  const fetchRequests = [];
+  const newPostFetchRequests = [];
 
   const syncWhenOnlineNewPosts = await getAllFromObjectStore(
     "syncWhenOnlineNewPosts"
@@ -269,10 +269,14 @@ const sync = async () => {
       body: JSON.stringify(obj),
     };
 
-    fetchRequests.push(fetch("/api/add", requestOptions));
+    newPostFetchRequests.push(fetch("/api/add", requestOptions));
   });
 
   await clearObjectStore("syncWhenOnlineNewPosts");
+
+  await Promise.all(newPostFetchRequests);
+
+  const newMessageFetchRequests = [];
 
   const syncWhenOnlineNewMessages = await getAllFromObjectStore(
     "syncWhenOnlineNewMessages"
@@ -285,12 +289,12 @@ const sync = async () => {
       body: JSON.stringify(obj),
     };
 
-    fetchRequests.push(fetch("/api/message", requestOptions));
+    newMessageFetchRequests.push(fetch("/api/message", requestOptions));
   });
 
   await clearObjectStore("syncWhenOnlineNewMessages");
 
-  await Promise.all(fetchRequests);
+  await Promise.all(newMessageFetchRequests);
 
   const clients_ = await clients.matchAll({ type: "window" });
   clients_.forEach((client) => {
@@ -312,9 +316,7 @@ const handleRecent = async (request) => {
     const responseClone = response.clone();
     const data = await responseClone.json();
 
-    data.forEach(async (element) => {
-      await addToObjectStore(element, "posts");
-    });
+    data.forEach((element) => addToObjectStore(element, "posts"));
   } catch (error) {
     const data = await getAllFromObjectStore("posts");
     data.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -326,10 +328,11 @@ const handleRecent = async (request) => {
 const handleAdd = async (request) => {
   let requestClone = request.clone();
   let response;
+  const data = await requestClone.json();
   try {
+    addToObjectStore(data, "posts");
     response = await fetch(request);
   } catch (error) {
-    const data = await requestClone.json();
     await addToObjectStore(data, "syncWhenOnlineNewPosts");
     response = Response.redirect("/");
   }
