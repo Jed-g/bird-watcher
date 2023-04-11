@@ -71,9 +71,21 @@ router.get("/post", async (req, res) => {
 
 router.post("/message", async (req, res) => {
   try {
-    const { postId, message, nickname, date } = req.body;
+    const {
+      postId,
+      message,
+      nickname,
+      date: dateString,
+      timeZoneOffset: clientTimeZoneOffset,
+    } = req.body;
+
+    // Store time in DB in UTC timezone
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    date.setMinutes(date.getMinutes() + clientTimeZoneOffset);
+
     const post = await Post.findById(postId);
-    post.chat.push({ userNickname: nickname, message, date: new Date(date) });
+    post.chat.push({ userNickname: nickname, message, date });
     post.chat.sort((a, b) => a.date - b.date);
     post.save();
     res.json({ status: "OK" });

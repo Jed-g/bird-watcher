@@ -25,8 +25,18 @@ const getNickname = () => {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
 
-      if (!db.objectStoreNames.contains("syncWhenOnline")) {
-        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
+      if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
+        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
+        db.createObjectStore("syncWhenOnlineNewMessages", {
+          autoIncrement: true,
+        });
+      }
+
+      if (!db.objectStoreNames.contains("posts")) {
+        db.createObjectStore("posts", { keyPath: "_id" });
       }
     };
 
@@ -59,8 +69,18 @@ const setNickname = (newNickname) => {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
 
-      if (!db.objectStoreNames.contains("syncWhenOnline")) {
-        db.createObjectStore("syncWhenOnline", { autoIncrement: true });
+      if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
+        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
+        db.createObjectStore("syncWhenOnlineNewMessages", {
+          autoIncrement: true,
+        });
+      }
+
+      if (!db.objectStoreNames.contains("posts")) {
+        db.createObjectStore("posts", { keyPath: "_id" });
       }
     };
 
@@ -72,6 +92,7 @@ const setNickname = (newNickname) => {
       transaction.oncomplete = () => {
         resolve();
         db.close();
+        window.location.reload();
       };
     };
   });
@@ -88,6 +109,7 @@ const handleSave = () => {
     $("#nickname-collector button").css("color", "rgb(71, 0, 0)");
   } else {
     $("#nickname-collector").hide();
+    $("body").css("overflow-y", "auto");
 
     setNickname(newNickname);
   }
@@ -97,6 +119,7 @@ try {
   await getNickname();
 } catch (error) {
   $("#nickname-collector").css("display", "flex");
+  $("body").css("overflow-y", "hidden");
 
   $("#nickname-collector button").click(handleSave);
   $("#nickname-collector input").keydown((e) => {

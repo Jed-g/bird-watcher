@@ -1,4 +1,8 @@
 import { getNickname } from "./nickname-collector.js";
+import {
+  getByIdFromObjectStore,
+  updateByIdInObjectStore,
+} from "./indexeddb.js";
 
 let nickname = "";
 const socket = io();
@@ -40,8 +44,18 @@ const loadChatMessages = (chat) => {
   });
 };
 
-const loadNewChatMessage = ({ message, nickname: messageAuthor }) => {
+const loadNewChatMessage = async ({ message, nickname: messageAuthor }) => {
   const date = new Date();
+
+  const post = await getByIdFromObjectStore(params.id, "posts");
+
+  post.chat.push({
+    userNickname: messageAuthor,
+    message,
+    date: date.toISOString(),
+  });
+
+  updateByIdInObjectStore(params.id, post, "posts");
 
   const isOwnMessage = nickname === messageAuthor;
 
@@ -95,6 +109,8 @@ const handleMessageSubmit = async () => {
   if (message.length > 0 && nickname.length > 0) {
     socket.emit("message", { postId: params.id, message, nickname });
 
+    const timeZoneOffset = new Date().getTimezoneOffset();
+
     // There has to be a seperate HTTP request since service workers cannot normally intercept web sockets
     const requestOptions = {
       method: "POST",
@@ -104,13 +120,12 @@ const handleMessageSubmit = async () => {
         message,
         nickname,
         date: new Date(),
+        timeZoneOffset,
       }),
     };
 
-    const response = await fetch("/api/message", requestOptions);
-    if (response.ok) {
-      loadNewChatMessage({ message, nickname });
-    }
+    fetch("/api/message", requestOptions);
+    loadNewChatMessage({ message, nickname });
   }
 };
 
