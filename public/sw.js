@@ -256,6 +256,8 @@ const clearObjectStore = (storeName) => {
 const sync = async () => {
   console.log("syncing");
 
+  const fetchRequests = [];
+
   const syncWhenOnlineNewPosts = await getAllFromObjectStore(
     "syncWhenOnlineNewPosts"
   );
@@ -267,7 +269,7 @@ const sync = async () => {
       body: JSON.stringify(obj),
     };
 
-    fetch("/api/add", requestOptions);
+    fetchRequests.push(fetch("/api/add", requestOptions));
   });
 
   await clearObjectStore("syncWhenOnlineNewPosts");
@@ -283,10 +285,12 @@ const sync = async () => {
       body: JSON.stringify(obj),
     };
 
-    fetch("/api/message", requestOptions);
+    fetchRequests.push(fetch("/api/message", requestOptions));
   });
 
   await clearObjectStore("syncWhenOnlineNewMessages");
+
+  await Promise.all(fetchRequests);
 
   const clients_ = await clients.matchAll({ type: "window" });
   clients_.forEach((client) => {

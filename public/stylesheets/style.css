@@ -1703,9 +1703,6 @@ html {
 .overflow-x-auto {
   overflow-x: auto;
 }
-.overflow-y-hidden {
-  overflow-y: hidden;
-}
 .rounded-lg {
   border-radius: 0.5rem;
 }
