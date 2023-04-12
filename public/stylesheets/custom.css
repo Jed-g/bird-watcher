@@ -1,0 +1,43 @@
+@supports (height: 100dvh) {
+  .full-dynamic-viewport-height {
+    height: 100dvh;
+  }
+}
+
+@supports (width: 100dvw) {
+  .full-dynamic-viewport-width {
+    width: 100dvw;
+  }
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.divider {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.divider-horizontal {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.chat-min-height {
+  min-height: 6rem;
+}
+
+.location {
+  border-radius: var(--rounded-btn);
+}
+
+.table-height {
+  height: calc(100vh - 124px);
+}
+
+@supports (height: 100dvh) {
+  .table-height {
+    height: calc(100dvh - 124px);
+  }
+}
