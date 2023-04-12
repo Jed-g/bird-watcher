@@ -27,3 +27,7 @@ body {
 .chat-min-height {
   min-height: 6rem;
 }
+
+.location {
+  border-radius: var(--rounded-btn);
+}

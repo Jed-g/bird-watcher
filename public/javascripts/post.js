@@ -11,11 +11,17 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
   get: (params, key) => params.get(key),
 });
 
+let existsInPosts;
+
+(async () => {
+  existsInPosts = await getByIdFromObjectStore(params.id, "posts");
+})();
+
 socket.emit("joinRoom", { postId: params.id });
 socket.on("message", (data) => loadNewChatMessage(data));
 
 const loadChatMessages = (chat) => {
-  chat.forEach(({ userNickname, message, date: dateString }) => {
+  chat?.forEach(({ userNickname, message, date: dateString }) => {
     const date = new Date(dateString);
     const isOwnMessage = nickname === userNickname;
 
@@ -47,15 +53,26 @@ const loadChatMessages = (chat) => {
 const loadNewChatMessage = async ({ message, nickname: messageAuthor }) => {
   const date = new Date();
 
-  const post = await getByIdFromObjectStore(params.id, "posts");
+  const post = existsInPosts
+    ? await getByIdFromObjectStore(params.id, "posts")
+    : await getByIdFromObjectStore(
+        parseInt(params.id),
+        "syncWhenOnlineNewPosts"
+      );
 
-  post.chat.push({
+  post?.chat?.push({
     userNickname: messageAuthor,
     message,
     date: date.toISOString(),
   });
 
-  updateByIdInObjectStore(params.id, post, "posts");
+  existsInPosts
+    ? await updateByIdInObjectStore(params.id, post, "posts")
+    : await updateByIdInObjectStore(
+        parseInt(params.id),
+        post,
+        "syncWhenOnlineNewPosts"
+      );
 
   const isOwnMessage = nickname === messageAuthor;
 
@@ -97,7 +114,7 @@ const insertDataIntoDOM = ({
     date.toLocaleString("en-GB", { dateStyle: "full", timeStyle: "short" })
   );
   $("#user").text(userNickname);
-  $(".description").text(description.length > 0 ? description : "NONE");
+  $(".description").text(description?.length > 0 ? description : "NONE");
 
   loadChatMessages(chat);
 };
@@ -124,7 +141,7 @@ const handleMessageSubmit = async () => {
       }),
     };
 
-    fetch("/api/message", requestOptions);
+    existsInPosts && fetch("/api/message", requestOptions);
     loadNewChatMessage({ message, nickname });
   }
 };

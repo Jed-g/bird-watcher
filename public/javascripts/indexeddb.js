@@ -10,7 +10,10 @@ const addToObjectStore = (data, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -49,7 +52,10 @@ const getByIdFromObjectStore = (id, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -89,7 +95,10 @@ const updateByIdInObjectStore = (id, data, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -131,7 +140,10 @@ const getAllFromObjectStore = (storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -171,7 +183,10 @@ const clearObjectStore = (storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {

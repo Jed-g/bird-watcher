@@ -18,6 +18,8 @@ oninstall = (e) => {
         "/javascripts/post.js",
         "/lib/air-datepicker.min.css",
         "/lib/air-datepicker.min.js",
+        "/lib/maplibre-gl.css",
+        "/lib/maplibre-gl.js",
         "/lib/jquery-3.6.4.min.js",
         "/manifest.json",
         "/images/favicon.ico",
@@ -64,7 +66,10 @@ const addToObjectStore = (data, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -103,7 +108,10 @@ const getByIdFromObjectStore = (id, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -143,7 +151,10 @@ const updateByIdInObjectStore = (id, data, storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -185,7 +196,10 @@ const getAllFromObjectStore = (storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -225,7 +239,10 @@ const clearObjectStore = (storeName) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -318,7 +335,10 @@ const handleRecent = async (request) => {
 
     data.forEach((element) => addToObjectStore(element, "posts"));
   } catch (error) {
-    const data = await getAllFromObjectStore("posts");
+    const data = [
+      ...(await getAllFromObjectStore("posts")),
+      ...(await getAllFromObjectStore("syncWhenOnlineNewPosts")),
+    ];
     data.sort((a, b) => new Date(b.date) - new Date(a.date));
     response = new Response(JSON.stringify(data), { status: 200 });
   }
@@ -330,7 +350,6 @@ const handleAdd = async (request) => {
   let response;
   const data = await requestClone.json();
   try {
-    addToObjectStore(data, "posts");
     response = await fetch(request);
   } catch (error) {
     await addToObjectStore(data, "syncWhenOnlineNewPosts");
@@ -349,9 +368,21 @@ const handleViewPost = async (request) => {
     response = await fetch(request);
     const responseClone = response.clone();
     const data = await responseClone.json();
-    await updateByIdInObjectStore(params.id, data, "posts");
+
+    if (await getByIdFromObjectStore(params.id, "posts")) {
+      await updateByIdInObjectStore(params.id, data, "posts");
+    }
   } catch (error) {
-    const data = await getByIdFromObjectStore(params.id, "posts");
+    let data;
+    if (await getByIdFromObjectStore(params.id, "posts")) {
+      data = await getByIdFromObjectStore(params.id, "posts");
+    } else {
+      data = await getByIdFromObjectStore(
+        parseInt(params.id),
+        "syncWhenOnlineNewPosts"
+      );
+    }
+
     response = new Response(JSON.stringify(data), { status: 200 });
   }
   return response;

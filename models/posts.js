@@ -5,6 +5,7 @@ const getModel = (connection) => {
     description: { type: String, default: "" },
     date: { type: Date, default: Date.now },
     userNickname: { type: String, required: true },
+    location: { type: String, required: true },
     chat: [{ userNickname: String, message: String, date: Date }],
   });
 

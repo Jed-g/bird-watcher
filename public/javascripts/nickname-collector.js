@@ -1,3 +1,5 @@
+import { getByIdFromObjectStore, getAllFromObjectStore } from "./indexeddb.js";
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
 
@@ -7,9 +9,18 @@ if ("serviceWorker" in navigator) {
     });
   });
 
-  navigator.serviceWorker.addEventListener("message", (e) => {
+  navigator.serviceWorker.addEventListener("message", async (e) => {
     if (e.data === "reload") {
-      window.location.reload();
+      if (window.location.pathname === "/post") {
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+          get: (params, key) => params.get(key),
+        });
+
+        const existsInPosts = await getByIdFromObjectStore(params.id, "posts");
+        existsInPosts ? window.location.reload() : window.location.replace("/");
+      } else {
+        window.location.reload();
+      }
     }
   });
 }
@@ -26,7 +37,10 @@ const getNickname = () => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {
@@ -70,7 +84,10 @@ const setNickname = (newNickname) => {
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewPosts")) {
-        db.createObjectStore("syncWhenOnlineNewPosts", { autoIncrement: true });
+        db.createObjectStore("syncWhenOnlineNewPosts", {
+          keyPath: "_id",
+          autoIncrement: true,
+        });
       }
 
       if (!db.objectStoreNames.contains("syncWhenOnlineNewMessages")) {

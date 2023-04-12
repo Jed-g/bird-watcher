@@ -28,13 +28,18 @@ router.post("/add", async (req, res) => {
     date: dateString,
     description,
     timeZoneOffset: clientTimeZoneOffset,
-    nickname,
+    userNickname,
+    location,
+    chat,
   } = req.body;
 
   if (
     dateString === undefined ||
     description === undefined ||
-    nickname === undefined
+    userNickname === undefined ||
+    location === undefined ||
+    clientTimeZoneOffset === undefined ||
+    !Array.isArray(chat)
   ) {
     res.status(400).json({ message: "BAD REQUEST" });
     return;
@@ -48,7 +53,9 @@ router.post("/add", async (req, res) => {
   const post = new Post({
     date,
     description,
-    userNickname: nickname,
+    userNickname,
+    location,
+    chat,
   });
 
   try {
