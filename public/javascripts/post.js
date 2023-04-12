@@ -100,10 +100,110 @@ const loadNewChatMessage = async ({ message, nickname: messageAuthor }) => {
   });
 };
 
+const initializeMaps = (location) => {
+  if (!navigator.onLine) {
+    $(".map-offline-info").css("display", "flex");
+    $("#map-desktop").hide();
+    $("#map-mobile").hide();
+  }
+
+  window.addEventListener("offline", () => {
+    $(".map-offline-info").css("display", "flex");
+    $("#map-desktop").hide();
+    $("#map-mobile").hide();
+  });
+
+  const lat = parseFloat(location.split(" ")[0]);
+  const lng = parseFloat(location.split(" ")[1]);
+
+  const mapDesktop = new maplibregl.Map({
+    container: "map-desktop",
+    style: {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+        },
+      },
+      layers: [
+        {
+          id: "osm",
+          type: "raster",
+          source: "osm",
+        },
+      ],
+      center: [lng, lat], // starting position [lng, lat]
+      zoom: 10, // starting zoom
+    },
+  });
+
+  mapDesktop.addControl(
+    new maplibregl.NavigationControl({
+      visualizePitch: true,
+      showZoom: true,
+      showCompass: true,
+    })
+  );
+
+  mapDesktop.addControl(
+    new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+    })
+  );
+
+  new maplibregl.Marker().setLngLat([lng, lat]).addTo(mapDesktop);
+
+  const mapMobile = new maplibregl.Map({
+    container: "map-mobile",
+    style: {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+        },
+      },
+      layers: [
+        {
+          id: "osm",
+          type: "raster",
+          source: "osm",
+        },
+      ],
+      center: [lng, lat], // starting position [lng, lat]
+      zoom: 10, // starting zoom
+    },
+  });
+
+  mapMobile.addControl(
+    new maplibregl.NavigationControl({
+      visualizePitch: true,
+      showZoom: true,
+      showCompass: true,
+    })
+  );
+
+  mapMobile.addControl(
+    new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+    })
+  );
+
+  new maplibregl.Marker().setLngLat([lng, lat]).addTo(mapMobile);
+};
+
 const insertDataIntoDOM = ({
   description,
   userNickname,
   date: dateString,
+  location,
   chat,
 }) => {
   const date = new Date(dateString);
@@ -116,7 +216,23 @@ const insertDataIntoDOM = ({
   $("#user").text(userNickname);
   $(".description").text(description?.length > 0 ? description : "NONE");
 
+  const DECIMAL_PLACES_TO_ROUND_TO = 8;
+
+  const lat =
+    Math.round(
+      parseFloat(location.split(" ")[0]) *
+        Math.pow(10, DECIMAL_PLACES_TO_ROUND_TO)
+    ) / Math.pow(10, DECIMAL_PLACES_TO_ROUND_TO);
+  const lng =
+    Math.round(
+      parseFloat(location.split(" ")[1]) *
+        Math.pow(10, DECIMAL_PLACES_TO_ROUND_TO)
+    ) / Math.pow(10, DECIMAL_PLACES_TO_ROUND_TO);
+
+  $(".location").text(`${lat}, ${lng}`);
+
   loadChatMessages(chat);
+  initializeMaps(location);
 };
 
 const handleMessageSubmit = async () => {

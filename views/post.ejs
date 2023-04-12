@@ -31,6 +31,18 @@
         class="object-contain rounded-box max-h-96"
       />
       <div class="divider sm:hidden"></div>
+      <div class="bg-base-300 rounded-box overflow-hidden sm:hidden w-full">
+        <div class="p-4 pb-2">
+          <p class="text-sm brightness-75 mb-1">Location</p>
+          <p class="text-center">Coordinates:</p>
+          <p class="location text-center"></p>
+        </div>
+        <div id="map-mobile" class="h-56"></div>
+        <div class="map-offline-info h-20 justify-center items-center hidden">
+          <p>Map unavailable when offline.</p>
+        </div>
+      </div>
+      <div class="divider sm:hidden"></div>
       <div class="bg-base-300 rounded-box p-4 sm:hidden w-full">
         <p class="text-sm brightness-75 mb-1">Description</p>
         <p class="description"></p>
@@ -75,6 +87,18 @@
     </div>
     <div class="divider divider-horizontal hidden sm:flex"></div>
     <div class="flex-col grow hidden sm:flex">
+      <div class="bg-base-300 rounded-box overflow-hidden">
+        <div class="p-4 pb-2">
+          <p class="text-sm brightness-75 mb-1">Location</p>
+          <p class="text-center">Coordinates:</p>
+          <p class="location text-center"></p>
+        </div>
+        <div id="map-desktop" class="h-56"></div>
+        <div class="map-offline-info h-20 justify-center items-center hidden">
+          <p>Map unavailable when offline.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
       <div class="bg-base-300 rounded-box p-4">
         <p class="text-sm brightness-75 mb-1">Description</p>
         <p class="description"></p>
