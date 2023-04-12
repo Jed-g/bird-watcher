@@ -1579,24 +1579,24 @@ html {
 .btm-nav-lg>*:where(.active) {
   border-top-width: 4px;
 }
-.btn-sm {
-  height: 2rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  min-height: 2rem;
-  font-size: 0.875rem;
+.btn-xs {
+  height: 1.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
 }
 .btn-block {
   width: 100%;
 }
-.btn-square:where(.btn-sm) {
-  height: 2rem;
-  width: 2rem;
+.btn-square:where(.btn-xs) {
+  height: 1.5rem;
+  width: 1.5rem;
   padding: 0px;
 }
-.btn-circle:where(.btn-sm) {
-  height: 2rem;
-  width: 2rem;
+.btn-circle:where(.btn-xs) {
+  height: 1.5rem;
+  width: 1.5rem;
   border-radius: 9999px;
   padding: 0px;
 }
@@ -1728,8 +1728,22 @@ html {
   border-bottom-right-radius: inherit;
   border-bottom-left-radius: unset;
 }
+.table-compact :where(th, td) {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
 .absolute {
   position: absolute;
+}
+.sticky {
+  position: sticky;
+}
+.\!left-auto {
+  left: auto !important;
+}
+.top-0 {
+  top: 0px;
 }
 .z-50 {
   z-index: 50;
@@ -1819,9 +1833,6 @@ html {
 .w-1\/2 {
   width: 50%;
 }
-.w-11\/12 {
-  width: 91.666667%;
-}
 .w-full {
   width: 100%;
 }
@@ -1851,9 +1862,6 @@ html {
 }
 .overflow-scroll {
   overflow: scroll;
-}
-.overflow-x-auto {
-  overflow-x: auto;
 }
 .rounded-lg {
   border-radius: 0.5rem;
@@ -1971,5 +1979,17 @@ html {
 
   .sm\:justify-between {
     justify-content: space-between;
+  }
+}
+@media (min-width: 768px) {
+
+  .md\:max-w-2xl {
+    max-width: 42rem;
+  }
+}
+@media (min-width: 1024px) {
+
+  .lg\:max-w-5xl {
+    max-width: 64rem;
   }
 }
