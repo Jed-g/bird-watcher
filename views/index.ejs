@@ -37,29 +37,29 @@
       </li>
     </ul>
   </div>
-  <div class="overflow-scroll w-full table-height flex justify-center">
-    <table
-      class="table table-zebra w-full table-compact md:max-w-2xl lg:max-w-5xl"
-    >
-      <thead>
-        <tr>
-          <th class="sticky top-0 !left-auto">Identification</th>
-          <th class="sticky top-0">Time seen</th>
-          <th class="sticky top-0">User</th>
-          <th class="sticky top-0"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="hidden" id="initial-row">
-          <td>UNKNOWN</td>
-          <td></td>
-          <td></td>
-          <th class="flex justify-center items-center">
-            <a class="btn btn-accent btn-xs">Details</a>
-          </th>
-        </tr>
-      </tbody>
-    </table>
+  <div class="flex justify-center w-full">
+    <div class="overflow-scroll w-full table-height md:max-w-2xl lg:max-w-5xl">
+      <table class="table table-zebra w-full table-compact">
+        <thead>
+          <tr>
+            <th class="sticky top-0 !left-auto">Identification</th>
+            <th class="sticky top-0">Time seen</th>
+            <th class="sticky top-0">User</th>
+            <th class="sticky top-0"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hidden" id="initial-row">
+            <td>UNKNOWN</td>
+            <td></td>
+            <td></td>
+            <th class="flex justify-center items-center">
+              <a class="btn btn-accent btn-xs">Details</a>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <%- include('partials/footer'); -%>
