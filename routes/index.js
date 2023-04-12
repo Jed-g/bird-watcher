@@ -13,7 +13,7 @@ router.get("/nearby", (req, res) => {
   res.render("nearby", {
     page: req.url,
     title: "Nearby Bird Sightings",
-    scripts: ["index.js"],
+    scripts: ["nearby.js"],
   });
 });
 

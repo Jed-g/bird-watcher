@@ -4,7 +4,7 @@ const insertDataIntoDOM = (data) => {
     const cloned = $("#initial-row").clone(true);
     cloned.removeAttr("id");
     cloned.removeClass("hidden");
-    cloned.children(":nth-child(1)").text("test");
+    cloned.children(":nth-child(1)").text("UNKNOWN");
     cloned.children(":nth-child(2)").text(
       date.toLocaleString("en-GB", {
         dateStyle: "medium",
@@ -18,6 +18,7 @@ const insertDataIntoDOM = (data) => {
       .attr("href", "/post?id=" + _id);
     cloned.appendTo("tbody");
   });
+  $("#initial-row").remove();
 };
 
 (async () => {

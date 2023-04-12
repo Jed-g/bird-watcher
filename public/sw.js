@@ -16,6 +16,7 @@ oninstall = (e) => {
         "/javascripts/nickname-collector.js",
         "/javascripts/indexeddb.js",
         "/javascripts/post.js",
+        "/javascripts/nearby.js",
         "/lib/air-datepicker.min.css",
         "/lib/air-datepicker.min.js",
         "/lib/maplibre-gl.css",
@@ -345,6 +346,69 @@ const handleRecent = async (request) => {
   return response;
 };
 
+// GeoDataSource.com (C) All Rights Reserved 2022
+// Licensed under LGPLv3.
+const distance = (lat1, lon1, lat2, lon2, unit) => {
+  if (lat1 == lat2 && lon1 == lon2) {
+    return 0;
+  } else {
+    let radlat1 = (Math.PI * lat1) / 180;
+    let radlat2 = (Math.PI * lat2) / 180;
+    let theta = lon1 - lon2;
+    let radtheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    if (unit == "K") {
+      dist = dist * 1.609344;
+    }
+    if (unit == "N") {
+      dist = dist * 0.8684;
+    }
+    return dist;
+  }
+};
+
+const handleNearby = async (request) => {
+  const requestClone = request.clone();
+  let response;
+  try {
+    response = await fetch(request);
+    await clearObjectStore("posts");
+    const responseClone = response.clone();
+    const data = await responseClone.json();
+
+    data.forEach((element) => addToObjectStore(element, "posts"));
+  } catch (error) {
+    const data = [
+      ...(await getAllFromObjectStore("posts")),
+      ...(await getAllFromObjectStore("syncWhenOnlineNewPosts")),
+    ];
+    const {
+      location: { lat, lng },
+    } = await requestClone.json();
+    data.sort((a, b) => {
+      const lat1 = parseFloat(a.location.split(" ")[0]);
+      const long1 = parseFloat(a.location.split(" ")[1]);
+      const lat2 = parseFloat(b.location.split(" ")[0]);
+      const long2 = parseFloat(b.location.split(" ")[1]);
+
+      const distance1 = distance(lat1, long1, lat, lng);
+      const distance2 = distance(lat2, long2, lat, lng);
+
+      return distance1 - distance2;
+    });
+    response = new Response(JSON.stringify(data), { status: 200 });
+  }
+  return response;
+};
+
 const handleAdd = async (request) => {
   let requestClone = request.clone();
   let response;
@@ -424,6 +488,8 @@ onfetch = (e) => {
           return handleViewPost(e.request);
         case "/api/message":
           return handleSendMessage(e.request);
+        case "/api/nearby":
+          return handleNearby(e.request);
         default:
           return caches.match(e.request).then((response) => {
             if (response) {
