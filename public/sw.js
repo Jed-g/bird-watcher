@@ -314,6 +314,11 @@ const sync = async () => {
 
   await Promise.all(newMessageFetchRequests);
 
+  const response = await fetch("/api/recent");
+  const data = await response.json();
+  await clearObjectStore("posts");
+  data.forEach((element) => addToObjectStore(element, "posts"));
+
   const clients_ = await clients.matchAll({ type: "window" });
   clients_.forEach((client) => {
     client.postMessage("reload");
@@ -330,7 +335,7 @@ const handleRecent = async (request) => {
   let response;
   try {
     response = await fetch(request);
-    await clearObjectStore("posts");
+
     const responseClone = response.clone();
     const data = await responseClone.json();
 
