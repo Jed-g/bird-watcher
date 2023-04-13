@@ -1,4 +1,4 @@
-import { getByIdFromObjectStore, getAllFromObjectStore } from "./indexeddb.js";
+import { getByIdFromObjectStore } from "./indexeddb.js";
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
