@@ -12,39 +12,138 @@ FILTER (langMatches(lang(?label), "en"))
 LIMIT 50`);
 
 let suggestions = [];
+let selected = 0;
+let unknown = false;
 
 const updateAutocomplete = () => {
+  selected = 0;
   $("#autocomplete").empty();
-  suggestions.forEach((suggestion) => {
-    $("#autocomplete").append($("<li>").html(`<a>${suggestion}</a>`));
+  suggestions.forEach(({ label }, i) => {
+    if (i === 0) {
+      $("#autocomplete").append(
+        $("<li>").html(`<a class="active">${label}</a>`)
+      );
+    } else {
+      $("#autocomplete").append($("<li>").html(`<a>${label}</a>`));
+    }
+    $("#autocomplete")
+      .children()
+      .last()
+      .click(() => {
+        $("#identification").blur();
+        fetchAutocomplete(suggestions[i].label);
+        $("#identification").val(suggestions[i].label);
+      });
   });
 };
 
-$("#identification").on("input", async (e) => {
-  const newValue = e.target.value;
+const changeAutocompleteSelected = (newSelected) => {
+  selected = newSelected;
 
+  $("#autocomplete a").removeClass("active");
+  $("#autocomplete")
+    .children(`:nth-child(${newSelected + 1})`)
+    .children()
+    .addClass("active");
+
+  $("#autocomplete")
+    .children(`:nth-child(${newSelected + 1})`)
+    .children()
+    .get(0)
+    .scrollIntoView({ block: "nearest" });
+};
+
+const fetchAutocomplete = async (newValue) => {
   const response = await fetch(
     "https://dbpedia.org/sparql?format=json&query=" + searchQuery(newValue)
   );
 
   const data = (await response.json()).results.bindings;
 
-  suggestions = data.map((element) => element.label.value);
+  suggestions = data.map((element) => ({
+    label: element.label.value,
+    uri: element.uri.value,
+  }));
 
   if ($("#identification").val().length <= 0) {
     $("#autocomplete").empty();
   } else {
     updateAutocomplete();
   }
+};
+
+$("#identification").on("input", (e) => {
+  const newValue = e.target.value;
+  fetchAutocomplete(newValue);
 });
 
+$("#autocomplete").on("mousedown", (e) => e.preventDefault());
 $("#identification").focus(() => $("#autocomplete").css("display", "block"));
-$("#identification").blur(() => $("#autocomplete").css("display", "none"));
+$("#identification").blur(() => {
+  suggestions[selected] !== undefined &&
+    $("#identification").val(suggestions[selected].label);
+  suggestions[selected] !== undefined &&
+    fetchAutocomplete(suggestions[selected].label);
+  $("#autocomplete").css("display", "none");
+});
+$("#identification").keydown((e) => {
+  if (e.key === "Enter") {
+    $("#identification").val(suggestions[selected].label);
+    $("#identification").blur();
+    fetchAutocomplete(suggestions[selected].label);
+    return false;
+  }
+
+  if (e.key === "ArrowUp") {
+    selected > 0 && changeAutocompleteSelected(selected - 1);
+    return false;
+  }
+
+  if (e.key === "ArrowDown") {
+    selected < suggestions.length - 1 &&
+      changeAutocompleteSelected(selected + 1);
+    return false;
+  }
+});
+
+let offline = !navigator.onLine;
 
 $("#unknown").click(() => {
-  $("#identification").val("UNKNOWN");
-  suggestions = [];
-  updateAutocomplete();
+  if (offline) {
+    $("#identification").val("Unavailable when offline...");
+    $("#identification").attr("disabled", true);
+    $("#unknown").addClass("btn-disabled");
+    $("#unknown").removeClass("btn-primary");
+    $("#unknown").removeClass("btn-accent");
+    $("#unknown").text("Offline");
+    suggestions = [];
+    updateAutocomplete();
+  } else if (!unknown) {
+    unknown = true;
+    $("#identification").val("UNKNOWN");
+    $("#identification").attr("disabled", true);
+    $("#unknown").text("Identify");
+    $("#unknown").removeClass("btn-accent");
+    $("#unknown").addClass("btn-primary");
+    suggestions = [];
+    updateAutocomplete();
+  } else {
+    unknown = false;
+    $("#identification").val("");
+    $("#identification").attr("disabled", null);
+    $("#unknown").text("Unknown");
+    $("#unknown").addClass("btn-accent");
+    $("#unknown").removeClass("btn-primary");
+    suggestions = [];
+    updateAutocomplete();
+  }
+});
+
+navigator.onLine || $("#unknown").click();
+
+window.addEventListener("offline", () => {
+  offline = true;
+  $("#unknown").click();
 });
 
 const localeEn = {
@@ -113,14 +212,19 @@ window.addEventListener("offline", () => {
   }
 });
 
-const useGeolocation = () => {
+const useGeolocation = (submit = false) => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       locationSet = true;
-      $("#form button").css("backgroundColor", "");
 
       mapCenter.lat = position.coords.latitude;
       mapCenter.lng = position.coords.longitude;
+
+      $("#location-error").addClass("hidden");
+
+      if (submit) {
+        $("#form").submit();
+      }
     });
   }
 };
@@ -207,8 +311,29 @@ $("#map-button").click(() => {
 $("#form").submit(async (e) => {
   e.preventDefault();
 
+  $("#location-error").addClass("hidden");
+  $("#identification-error").addClass("hidden");
+
+  let valid = true;
+
+  if (!unknown && suggestions[selected] === undefined) {
+    $("#identification-error").removeClass("hidden");
+    valid = false;
+  }
+
   if (!locationSet) {
-    $("#form button").css("backgroundColor", "red");
+    $("#location-error").removeClass("hidden");
+
+    if (valid) {
+      useGeolocation(true);
+    } else {
+      useGeolocation(false);
+    }
+
+    valid = false;
+  }
+
+  if (!valid) {
     return;
   }
 
@@ -224,23 +349,29 @@ $("#form").submit(async (e) => {
     console.error("Nickname not defined");
   }
 
+  const payload = {
+    date,
+    description,
+    timeZoneOffset,
+    userNickname: nickname,
+    location: mapCenter.lat + " " + mapCenter.lng,
+    chat: [],
+  };
+
+  if (suggestions[selected] !== undefined) {
+    payload.identificationURI = suggestions[selected].uri;
+  }
+
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      date,
-      description,
-      timeZoneOffset,
-      userNickname: nickname,
-      location: mapCenter.lat + " " + mapCenter.lng,
-      chat: [],
-    }),
+    body: JSON.stringify(payload),
   };
 
   const response = await fetch("/api/add", requestOptions);
 
   if (!response.ok) {
-    $("#form button").css("backgroundColor", "red");
+    $(":submit").css("backgroundColor", "red");
   } else {
     window.location.assign(response.url);
   }

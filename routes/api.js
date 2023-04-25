@@ -86,6 +86,7 @@ router.post("/add", async (req, res) => {
     userNickname,
     location,
     chat,
+    identificationURI,
   } = req.body;
 
   if (
