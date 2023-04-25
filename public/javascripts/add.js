@@ -69,6 +69,7 @@ const fetchAutocomplete = async (newValue) => {
 
     if ($("#identification").val().length <= 0) {
       $("#autocomplete").empty();
+      suggestions = [];
     } else {
       updateAutocomplete();
     }
