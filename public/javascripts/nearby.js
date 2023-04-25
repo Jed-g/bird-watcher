@@ -34,7 +34,7 @@ const insertDataIntoDOM = (data) => {
   $("#table-container").css("display", "flex");
   $("#location-selector").hide();
 
-  data.forEach(({ location, userNickname, _id }) => {
+  data.forEach(({ location, userNickname, _id, identified, label }) => {
     const lat = parseFloat(location.split(" ")[0]);
     const lng = parseFloat(location.split(" ")[1]);
     const DECIMAL_PLACES_TO_ROUND_TO = 3;
@@ -47,7 +47,10 @@ const insertDataIntoDOM = (data) => {
     const cloned = $("#initial-row").clone(true);
     cloned.removeAttr("id");
     cloned.removeClass("hidden");
-    cloned.children(":nth-child(1)").text("UNKNOWN");
+    const labelText = identified ? label : "UNKNOWN";
+    cloned
+      .children(":nth-child(1)")
+      .text(labelText.length > 20 ? labelText.slice(0, 17) + "..." : labelText);
     cloned.children(":nth-child(2)").text(distanceFromUserInKms);
     cloned.children(":nth-child(3)").text(userNickname);
     cloned
