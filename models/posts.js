@@ -7,6 +7,10 @@ const getModel = (connection) => {
     userNickname: { type: String, required: true },
     location: { type: String, required: true },
     chat: [{ userNickname: String, message: String, date: Date }],
+    identified: { type: Boolean, default: false },
+    label: { type: String },
+    abstract: { type: String },
+    uri: { type: String },
   });
 
   const Post = connection.model("Post", PostSchema, "posts");

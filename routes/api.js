@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
 
 const mongoose = require("mongoose");
 
@@ -78,6 +79,19 @@ router.post("/nearby", async (req, res) => {
   }
 });
 
+const searchByURI = (uri) =>
+  encodeURIComponent(`SELECT DISTINCT ?uri ?label ?abstract
+  WHERE {
+  ?uri rdfs:label ?label .
+  ?uri dbo:abstract ?abstract .
+  ?uri dbo:wikiPageWikiLink dbr:Bird .
+  ?uri rdf:type dbo:Bird .
+  FILTER (str(?uri) = <${uri}>)
+  FILTER (langMatches(lang(?label), "en"))
+  FILTER (langMatches(lang(?abstract), "en"))
+  }
+  LIMIT 1`);
+
 router.post("/add", async (req, res) => {
   const {
     date: dateString,
@@ -101,18 +115,54 @@ router.post("/add", async (req, res) => {
     return;
   }
 
+  let fetchSuccessful = false;
+  let uri;
+  let label;
+  let abstract;
+
+  if (identificationURI !== undefined) {
+    try {
+      const {
+        results: {
+          bindings: [data],
+        },
+      } = (
+        await axios.get(
+          "https://dbpedia.org/sparql?format=json&query=" +
+            searchByURI(identificationURI)
+        )
+      ).data;
+
+      ({
+        uri: { value: uri },
+        label: { value: label },
+        abstract: { value: abstract },
+      } = data);
+
+      fetchSuccessful = true;
+    } catch (error) {
+      console.error("Error while fetching from dbpedia");
+    }
+  }
+
   // Store time in DB in UTC timezone
   const date = new Date(dateString);
   date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
   date.setMinutes(date.getMinutes() + clientTimeZoneOffset);
 
-  const post = new Post({
+  let data = {
     date,
     description,
     userNickname,
     location,
     chat,
-  });
+  };
+
+  if (fetchSuccessful) {
+    data = { ...data, uri, label, abstract, identified: true };
+  }
+
+  const post = new Post(data);
 
   try {
     await post.save();
