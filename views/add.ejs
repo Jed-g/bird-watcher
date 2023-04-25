@@ -18,9 +18,30 @@
             id="autocomplete"
           ></ul>
         </div>
-        <button class="btn btn-secondary" type="button" id="unknown">
-          <p>Unknown</p>
+        <button class="btn btn-accent" type="button" id="unknown">
+          Unknown
         </button>
+      </div>
+      <div
+        class="alert alert-error shadow-lg p-2 mt-3 hidden"
+        id="identification-error"
+      >
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current flex-shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="text-sm">Identify bird or click UNKNOWN!</span>
+        </div>
       </div>
     </div>
     <div class="form-control w-full">
@@ -76,6 +97,27 @@
           class="h-full justify-center items-center flex-col p-4 bg-base-300 hidden"
         >
           <p>Map unavailable when offline.</p>
+        </div>
+      </div>
+      <div
+        class="alert alert-error shadow-lg p-2 mt-3 hidden"
+        id="location-error"
+      >
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current flex-shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="text-sm">Allow Geolocation or choose from map!</span>
         </div>
       </div>
     </div>
