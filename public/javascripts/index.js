@@ -1,3 +1,11 @@
+/**
+ * Inserts data into the DOM table.
+ *
+ * @param {Array} data - The array of data to be inserted.
+ * @param {string} data.date - The date string of the data.
+ * @param {string} data.userNickname - The user's nickname.
+ * @param {string} data._id - The ID of the data.
+ */
 const insertDataIntoDOM = (data) => {
   data.forEach(({ date: dateString, userNickname, _id, identified, label }) => {
     const date = new Date(dateString);
