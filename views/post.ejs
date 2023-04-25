@@ -8,7 +8,7 @@
   <div class="flex">
     <div class="bg-base-300 rounded-box grow p-4">
       <p class="text-sm brightness-75 mb-1">Identification</p>
-      <p id="identification">UNKNOWN</p>
+      <p id="identification"></p>
     </div>
     <div class="divider divider-horizontal"></div>
     <div class="bg-base-300 rounded-box grow p-4 hidden sm:block">
@@ -21,9 +21,17 @@
       <p id="user"></p>
     </div>
   </div>
+  <div class="divider sm:hidden abstract-divider"></div>
+  <div
+    class="bg-base-300 rounded-box grow p-4 sm:hidden max-h-36 overflow-y-scroll"
+  >
+    <p class="text-sm brightness-75 mb-1">Abstract</p>
+    <p id="abstract-mobile"></p>
+  </div>
+  <a class="btn btn-sm mt-3 uri-link sm:hidden">Read More (URI)</a>
   <div class="divider"></div>
   <div class="flex flex-col sm:flex-row">
-    <div class="flex flex-col items-center sm:w-3/5">
+    <div class="flex flex-col items-center grow">
       <img
         id="image"
         src="https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/facelift_2019/model_gw/aventador/2023/02_09_refresh/aven_gate_s_04_m.jpg"
@@ -86,7 +94,13 @@
       </div>
     </div>
     <div class="divider divider-horizontal hidden sm:flex"></div>
-    <div class="flex-col grow hidden sm:flex">
+    <div class="flex-col w-1/3 hidden sm:flex">
+      <div class="bg-base-300 rounded-box p-4 max-h-36 overflow-y-scroll">
+        <p class="text-sm brightness-75 mb-1">Abstract</p>
+        <p id="abstract-desktop"></p>
+      </div>
+      <a class="btn btn-sm mt-3 uri-link hidden sm:flex">Read More (URI)</a>
+      <div class="divider abstract-divider"></div>
       <div class="bg-base-300 rounded-box overflow-hidden">
         <div class="p-4 pb-2">
           <p class="text-sm brightness-75 mb-1">Location</p>

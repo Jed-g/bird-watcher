@@ -205,7 +205,24 @@ const insertDataIntoDOM = ({
   date: dateString,
   location,
   chat,
+  identified,
+  label,
+  uri,
+  abstract,
 }) => {
+  if (!identified) {
+    $("#identification").text("UNKNOWN");
+    $(".uri-link").remove();
+    $("#abstract-mobile").parent().remove();
+    $("#abstract-desktop").parent().remove();
+    $(".abstract-divider").remove();
+  } else {
+    $("#identification").text(label);
+    $("#abstract-mobile").text(abstract);
+    $("#abstract-desktop").text(abstract);
+    $(".uri-link").attr("href", uri);
+  }
+
   const date = new Date(dateString);
   $("#date-desktop").text(
     date.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })
