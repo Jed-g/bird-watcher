@@ -14,6 +14,18 @@ connection.once("open", () => {
   Post = require("../models/posts")(connection);
 });
 
+/**
+ * @swagger
+ * /api/recent:
+ *   get:
+ *     summary: Get recent bird sightings
+ *     description: Retrieve a list of recent bird sightings in descending order by date.
+ *     responses:
+ *       200:
+ *         description: A list of recent bird sightings
+ *       500:
+ *         description: Internal server error occurred
+ */
 router.get("/recent", async (req, res) => {
   try {
     const posts = await Post.find({}).sort({ date: -1 });
@@ -52,6 +64,36 @@ const distance = (lat1, lon1, lat2, lon2, unit) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/nearby:
+ *   post:
+ *     summary: Get nearby bird sightings
+ *     description: Get bird sightings sorted by proximity to a given location
+ *     requestBody:
+ *       description: Location coordinates
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               location:
+ *                 type: object
+ *                 properties:
+ *                   lat:
+ *                     type: number
+ *                   lng:
+ *                     type: number
+ *                 required:
+ *                   - lat
+ *                   - lng
+ *     responses:
+ *       200:
+ *         description: Return bird sightings sorted by proximity to a given location
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/nearby", async (req, res) => {
   const {
     location: { lat, lng },
@@ -78,6 +120,48 @@ router.post("/nearby", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/add:
+ *   post:
+ *     summary: Add a new bird sighting
+ *     description: Add a new bird sighting to the database
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: sighting
+ *         description: The bird sighting object to add
+ *         schema:
+ *           type: object
+ *           properties:
+ *             date:
+ *               type: string
+ *               format: date-time
+ *               description: The date of the sighting
+ *             description:
+ *               type: string
+ *               description: The description of the sighting
+ *             timeZoneOffset:
+ *               type: number
+ *               description: The timezone offset of the client
+ *             userNickname:
+ *               type: string
+ *               description: The nickname of the user who made the sighting
+ *             location:
+ *               type: string
+ *               description: The location of the sighting
+ *             chat:
+ *               type: array
+ *               description: The chat associated with the sighting
+ *     responses:
+ *       200:
+ *         description: The sighting was added successfully
+ *       400:
+ *         description: Bad request - some required fields are missing or invalid
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/add", async (req, res) => {
   const {
     date: dateString,
@@ -121,6 +205,26 @@ router.post("/add", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ *
+ * /api/post:
+ *   get:
+ *     summary: Get a specific bird sighting post by ID.
+ *     description: Retrieve a bird sighting post by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the bird sighting post to retrieve.
+ *     responses:
+ *       '200':
+ *         description: A JSON object containing the details of the requested bird sighting post.
+ *       '500':
+ *          description: Internal server error
+ */
 router.get("/post", async (req, res) => {
   try {
     const id = req.query.id;

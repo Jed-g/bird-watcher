@@ -1,6 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Render the home page
+ *     description: Render the home page
+ *     responses:
+ *       200:
+ *         description: Successfully rendered the home page
+ */
 router.get("/", (req, res) => {
   res.render("index", {
     page: req.url,
@@ -9,6 +19,16 @@ router.get("/", (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /nearby:
+ *   get:
+ *     summary: Render the nearby bird sightings page
+ *     description: Successfully rendered the nearby bird sightings page
+ *     responses:
+ *       200:
+ *         description: Render the nearby bird sightings page
+ */
 router.get("/nearby", (req, res) => {
   res.render("nearby", {
     page: req.url,
@@ -17,6 +37,17 @@ router.get("/nearby", (req, res) => {
   });
 });
 
+
+/**
+ * @swagger
+ * /add:
+ *   get:
+ *     summary: Render the add bird sighting form
+ *     description: Render the add bird sighting form with necessary data for client-side rendering
+ *     responses:
+ *       200:
+ *         description: Successfully rendered the add bird sighting form
+ */
 router.get("/add", (req, res) => {
   res.render("add", {
     page: req.url,
@@ -25,6 +56,16 @@ router.get("/add", (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /post:
+ *   get:
+ *     summary: Render the bird sighting details page
+ *     description: Render the bird sighting details page with necessary data for client-side rendering
+ *     responses:
+ *       200:
+ *         description: Successfully rendered the bird sighting details page
+ */
 router.get("/post", (req, res) => {
   res.render("post", {
     page: req.url,

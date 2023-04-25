@@ -1,5 +1,52 @@
 import { getNickname } from "./nickname-collector.js";
 
+const searchQuery = (keyword) =>
+  encodeURIComponent(`SELECT DISTINCT ?uri ?label
+WHERE {
+?uri rdfs:label ?label .
+?uri dbo:wikiPageWikiLink dbr:Bird .
+?uri rdf:type dbo:Bird .
+FILTER regex(str(?label), "${keyword}", "i")
+FILTER (langMatches(lang(?label), "en"))
+}
+LIMIT 50`);
+
+let suggestions = [];
+
+const updateAutocomplete = () => {
+  $("#autocomplete").empty();
+  suggestions.forEach((suggestion) => {
+    $("#autocomplete").append($("<li>").html(`<a>${suggestion}</a>`));
+  });
+};
+
+$("#identification").on("input", async (e) => {
+  const newValue = e.target.value;
+
+  const response = await fetch(
+    "https://dbpedia.org/sparql?format=json&query=" + searchQuery(newValue)
+  );
+
+  const data = (await response.json()).results.bindings;
+
+  suggestions = data.map((element) => element.label.value);
+
+  if ($("#identification").val().length <= 0) {
+    $("#autocomplete").empty();
+  } else {
+    updateAutocomplete();
+  }
+});
+
+$("#identification").focus(() => $("#autocomplete").css("display", "block"));
+$("#identification").blur(() => $("#autocomplete").css("display", "none"));
+
+$("#unknown").click(() => {
+  $("#identification").val("UNKNOWN");
+  suggestions = [];
+  updateAutocomplete();
+});
+
 const localeEn = {
   days: [
     "Sunday",

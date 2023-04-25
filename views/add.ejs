@@ -3,6 +3,28 @@
   <form class="w-full max-w-md p-4 mt-6" id="form">
     <div class="form-control w-full">
       <label class="label">
+        <span class="label-text">Identification</span>
+      </label>
+      <div class="flex">
+        <div class="relative w-full mr-3">
+          <input
+            type="text"
+            placeholder="Enter bird identification..."
+            id="identification"
+            class="input input-bordered w-full"
+          />
+          <ul
+            class="menu bg-base-100 w-full absolute top-full hidden max-h-60 overflow-y-scroll"
+            id="autocomplete"
+          ></ul>
+        </div>
+        <button class="btn btn-secondary" type="button" id="unknown">
+          <p>Unknown</p>
+        </button>
+      </div>
+    </div>
+    <div class="form-control w-full">
+      <label class="label">
         <span class="label-text">Date & Time Of Bird Sighting</span>
       </label>
       <input
