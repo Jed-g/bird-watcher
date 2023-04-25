@@ -16,7 +16,7 @@ connection.once("open", () => {
 
 /**
  * @swagger
- * /recent:
+ * /api/recent:
  *   get:
  *     summary: Get recent bird sightings
  *     description: Retrieve a list of recent bird sightings in descending order by date.
@@ -66,7 +66,7 @@ const distance = (lat1, lon1, lat2, lon2, unit) => {
 
 /**
  * @swagger
- * /nearby:
+ * /api/nearby:
  *   post:
  *     summary: Get nearby bird sightings
  *     description: Get bird sightings sorted by proximity to a given location
@@ -122,7 +122,7 @@ router.post("/nearby", async (req, res) => {
 
 /**
  * @swagger
- * /add:
+ * /api/add:
  *   post:
  *     summary: Add a new bird sighting
  *     description: Add a new bird sighting to the database
@@ -208,7 +208,7 @@ router.post("/add", async (req, res) => {
 /**
  * @swagger
  *
- * /post:
+ * /api/post:
  *   get:
  *     summary: Get a specific bird sighting post by ID.
  *     description: Retrieve a bird sighting post by ID.
