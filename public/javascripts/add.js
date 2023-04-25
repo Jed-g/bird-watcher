@@ -14,6 +14,7 @@ LIMIT 50`);
 let suggestions = [];
 let selected = 0;
 let unknown = false;
+let offline = !navigator.onLine;
 
 const updateAutocomplete = () => {
   selected = 0;
@@ -54,21 +55,26 @@ const changeAutocompleteSelected = (newSelected) => {
 };
 
 const fetchAutocomplete = async (newValue) => {
-  const response = await fetch(
-    "https://dbpedia.org/sparql?format=json&query=" + searchQuery(newValue)
-  );
+  try {
+    const response = await fetch(
+      "https://dbpedia.org/sparql?format=json&query=" + searchQuery(newValue)
+    );
 
-  const data = (await response.json()).results.bindings;
+    const data = (await response.json()).results.bindings;
 
-  suggestions = data.map((element) => ({
-    label: element.label.value,
-    uri: element.uri.value,
-  }));
+    suggestions = data.map((element) => ({
+      label: element.label.value,
+      uri: element.uri.value,
+    }));
 
-  if ($("#identification").val().length <= 0) {
-    $("#autocomplete").empty();
-  } else {
-    updateAutocomplete();
+    if ($("#identification").val().length <= 0) {
+      $("#autocomplete").empty();
+    } else {
+      updateAutocomplete();
+    }
+  } catch (error) {
+    offline = true;
+    $("#unknown").click();
   }
 };
 
@@ -106,8 +112,6 @@ $("#identification").keydown((e) => {
   }
 });
 
-let offline = !navigator.onLine;
-
 $("#unknown").click(() => {
   if (offline) {
     $("#identification").val("Unavailable when offline...");
@@ -118,6 +122,7 @@ $("#unknown").click(() => {
     $("#unknown").text("Offline");
     suggestions = [];
     updateAutocomplete();
+    unknown = true;
   } else if (!unknown) {
     unknown = true;
     $("#identification").val("UNKNOWN");
