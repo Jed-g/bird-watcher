@@ -12,9 +12,9 @@ const options =  {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'My API',
+            title: 'Bird Sighting App',
             version: '1.0.0',
-            description: 'My API documentation'
+            description: 'Bird Sighting App documentation'
         },
         servers: [
             {

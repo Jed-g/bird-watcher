@@ -286,7 +286,64 @@ router.get("/post", async (req, res) => {
   }
 });
 
-router.post("/message", async (req, res) => {
+/**
+ * @swagger
+ * /message:
+ *   post:
+ *     summary: Add a message to a post's chat.
+ *     description: Adds a message to the chat of the post with the given ID.
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postId:
+ *                 type: string
+ *                 description: The ID of the post to add the message to.
+ *               message:
+ *                 type: string
+ *                 description: The message to add to the chat.
+ *               nickname:
+ *                 type: string
+ *                 description: The user nickname of the person who sent the message.
+ *               date:
+ *                 type: string
+ *                 description: The date the message was sent (in ISO 8601 format).
+ *               timeZoneOffset:
+ *                 type: number
+ *                 description: The time zone offset of the user's device (in minutes).
+ *             required:
+ *               - postId
+ *               - message
+ *               - nickname
+ *               - date
+ *               - timeZoneOffset
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Status of the request.
+ *                   example: OK
+ *       '500':
+ *         description: INTERNAL SERVER ERROR
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Status of the request.
+ *                   example: INTERNAL SERVER ERROR
+*/
+ router.post("/message", async (req, res) => {
   try {
     const {
       postId,
@@ -306,6 +363,67 @@ router.post("/message", async (req, res) => {
     post.chat.sort((a, b) => a.date - b.date);
     post.save();
     res.json({ status: "OK" });
+  } catch (error) {
+    res.status(500).json({ status: "INTERNAL SERVER ERROR" });
+  }
+});
+
+
+/**
+ * @swagger
+ * /api/edit:
+ *   post:
+ */
+router.post("/edit", async (req, res) => {
+  const {
+    identificationURI
+  } = req.body;
+
+  let fetchSuccessful = false;
+  let uri;
+  let label;
+  let abstract;
+
+  if (identificationURI !== undefined) {
+    try {
+      const {
+        results: {
+          bindings: [data],
+        },
+      } = (
+          await axios.get(
+              "https://dbpedia.org/sparql?format=json&query=" +
+              searchByURI(identificationURI)
+          )
+      ).data;
+
+      ({
+        uri: { value: uri },
+        label: { value: label },
+        abstract: { value: abstract },
+      } = data);
+
+      fetchSuccessful = true;
+    } catch (error) {
+      console.error("Error while fetching from dbpedia");
+    }
+  }
+
+  let data = {identificationURI};
+
+  if (fetchSuccessful) {
+    data = { ...data, uri, label, abstract, identified: true };
+  }
+
+  const posts = await Post.find({});
+  posts.forEach((post) => {
+    posty = post
+    console.log(post);
+  });
+
+  try {
+    await posty.save();
+    res.redirect("/");
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
   }

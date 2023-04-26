@@ -74,4 +74,24 @@ router.get("/post", (req, res) => {
   });
 });
 
+
+/**
+ * @swagger
+ * /edit:
+ *   get:
+ *     summary: Edit the bird identification of your own post
+ *     description: Allows user to edit the identification of own posts'
+ *     responses:
+ *       200:
+ *         description: Successfully rendered the edit bird identification post
+ */
+router.get("/edit", (req, res) => {
+  res.render("edit", {
+    page: req.url,
+    title: "Edit Bird Identification",
+    scripts: ["edit.js"],
+  });
+});
+
+
 module.exports = router;

@@ -41,6 +41,7 @@ const loadChatMessages = (chat) => {
       cloned = $(".chat-start.hidden").clone(true);
     }
 
+
     // Update the message author, text, and time
     cloned.removeClass("hidden");
     cloned.children(".message-author").text(userNickname);
@@ -100,6 +101,7 @@ const loadNewChatMessage = async ({ message, nickname: messageAuthor }) => {
     // Clone other users' messages
     cloned = $(".chat-start.hidden").clone(true);
   }
+
 
   cloned.removeClass("hidden");
   cloned.children(".message-author").text(messageAuthor);
@@ -239,6 +241,12 @@ const insertDataIntoDOM = ({
   uri,
   abstract,
 }) => {
+  let buttonEdit;
+  const isOwnPost = nickname === userNickname;
+  if (isOwnPost) {
+    buttonEdit = $("#editIdentification").clone(true);
+    buttonEdit.removeClass("hidden");
+    $("#editIdentification").replaceWith(buttonEdit);
   // If the post is unidentified, hide certain elements and display "UNKNOWN" as identification
   if (!identified) {
     $("#identification").text("UNKNOWN");
@@ -252,6 +260,7 @@ const insertDataIntoDOM = ({
     $("#abstract-mobile").text(abstract);
     $("#abstract-desktop").text(abstract);
     $(".uri-link").attr("href", uri);
+    }
   }
 
   // Convert the date string to a date object and display in the appropriate formats
@@ -321,6 +330,7 @@ const handleMessageSubmit = async () => {
   try {
     // Tries to get the nickname of the user
     nickname = await getNickname();
+
   } catch (error) {}
 
   // Makes a fetch request to get the post data
