@@ -1,10 +1,13 @@
+// Function to add data to an object store
 const addToObjectStore = (data, storeName) => {
   return new Promise((resolve) => {
+    // Open a connection to the indexedDB database
     const dbOpenRequest = indexedDB.open("birdWatcher");
 
     dbOpenRequest.onupgradeneeded = () => {
       const db = dbOpenRequest.result;
 
+      // Create object stores if they don't exist
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
@@ -27,6 +30,7 @@ const addToObjectStore = (data, storeName) => {
       }
     };
 
+    // When the database is successfully opened, add the data to the specified object store
     dbOpenRequest.onsuccess = () => {
       const db = dbOpenRequest.result;
       const transaction = db.transaction(storeName, "readwrite");
@@ -40,13 +44,16 @@ const addToObjectStore = (data, storeName) => {
   });
 };
 
+// Function to get data by id from an object store
 const getByIdFromObjectStore = (id, storeName) => {
   return new Promise((resolve) => {
+    // Open a connection to the indexedDB database
     const dbOpenRequest = indexedDB.open("birdWatcher");
 
     dbOpenRequest.onupgradeneeded = () => {
       const db = dbOpenRequest.result;
 
+      // Create object stores if they don't exist
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
@@ -69,6 +76,7 @@ const getByIdFromObjectStore = (id, storeName) => {
       }
     };
 
+    // When the database is successfully opened, get the data from the specified object store
     dbOpenRequest.onsuccess = () => {
       const db = dbOpenRequest.result;
       const transaction = db.transaction(storeName, "readwrite");
@@ -83,13 +91,17 @@ const getByIdFromObjectStore = (id, storeName) => {
   });
 };
 
+// Function to update data by id in an object store
 const updateByIdInObjectStore = (id, data, storeName) => {
+  // Creates a promise to return the result of the database operation
   return new Promise((resolve) => {
+    // Opens a connection to the "birdWatcher" database
     const dbOpenRequest = indexedDB.open("birdWatcher");
 
     dbOpenRequest.onupgradeneeded = () => {
       const db = dbOpenRequest.result;
 
+      // Creates object stores for the different types of data
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
@@ -112,6 +124,7 @@ const updateByIdInObjectStore = (id, data, storeName) => {
       }
     };
 
+    // Adds the data to the specified object store in the database
     dbOpenRequest.onsuccess = () => {
       const db = dbOpenRequest.result;
       const transaction = db.transaction(storeName, "readwrite");
@@ -127,14 +140,16 @@ const updateByIdInObjectStore = (id, data, storeName) => {
     };
   });
 };
-
+//Function to get all information from the objects
 const getAllFromObjectStore = (storeName) => {
   return new Promise((resolve) => {
+    // Opens a connection to the "birdWatcher" database
     const dbOpenRequest = indexedDB.open("birdWatcher");
 
     dbOpenRequest.onupgradeneeded = () => {
       const db = dbOpenRequest.result;
 
+      // creates object stores for the different types of data
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
@@ -157,6 +172,7 @@ const getAllFromObjectStore = (storeName) => {
       }
     };
 
+    // Adds the data to the specified object store in the database
     dbOpenRequest.onsuccess = () => {
       const db = dbOpenRequest.result;
       const transaction = db.transaction(storeName, "readwrite");
@@ -171,13 +187,16 @@ const getAllFromObjectStore = (storeName) => {
   });
 };
 
+//Function to clear object stores
 const clearObjectStore = (storeName) => {
   return new Promise((resolve) => {
+    // Opens a connection to the "birdWatcher" database
     const dbOpenRequest = indexedDB.open("birdWatcher");
 
     dbOpenRequest.onupgradeneeded = () => {
       const db = dbOpenRequest.result;
 
+      // Creates object stores for the different types of data
       if (!db.objectStoreNames.contains("nickname")) {
         db.createObjectStore("nickname", { keyPath: "nickname" });
       }
@@ -200,6 +219,7 @@ const clearObjectStore = (storeName) => {
       }
     };
 
+    // Adds the data to the specified object store in the database
     dbOpenRequest.onsuccess = () => {
       const db = dbOpenRequest.result;
       const transaction = db.transaction(storeName, "readwrite");
@@ -214,6 +234,7 @@ const clearObjectStore = (storeName) => {
   });
 };
 
+// Export the functions as a module
 export {
   addToObjectStore,
   clearObjectStore,

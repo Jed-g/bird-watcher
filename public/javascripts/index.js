@@ -7,22 +7,28 @@
  * @param {string} data._id - The ID of the data.
  */
 const insertDataIntoDOM = (data) => {
+  // Loop through the array of data and extract the necessary information.
   data.forEach(({ date: dateString, userNickname, _id, identified, label }) => {
     const date = new Date(dateString);
+    // Clone the initial row and remove the ID and the "hidden" class from it.
     const cloned = $("#initial-row").clone(true);
     cloned.removeAttr("id");
     cloned.removeClass("hidden");
+    // Set the label text of the post. If the post is identified, use the label provided, otherwise use "UNKNOWN".
     const labelText = identified ? label : "UNKNOWN";
     cloned
       .children(":nth-child(1)")
       .text(labelText.length > 20 ? labelText.slice(0, 17) + "..." : labelText);
+    // Set the date and time of the post using the Date object.
     cloned.children(":nth-child(2)").text(
       date.toLocaleString("en-GB", {
         dateStyle: "medium",
         timeStyle: "short",
       })
     );
+    // Set the user nickname of the post.
     cloned.children(":nth-child(3)").text(userNickname);
+    // Set the href attribute of the post link to include the post ID.
     cloned
       .children(":nth-child(4)")
       .children(":first")
@@ -32,6 +38,7 @@ const insertDataIntoDOM = (data) => {
   $("#initial-row").remove();
 };
 
+// Fetch the recent data from the server and insert it into the DOM table.
 (async () => {
   const response = await fetch("/api/recent");
   const data = await response.json();
