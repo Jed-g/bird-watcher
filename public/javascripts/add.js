@@ -1,5 +1,6 @@
 import { getNickname } from "./nickname-collector.js";
 
+// This function generates a SPARQL query string with a keyword parameter.
 const searchQuery = (keyword) =>
   encodeURIComponent(`SELECT DISTINCT ?uri ?label
 WHERE {
@@ -16,6 +17,7 @@ let selected = 0;
 let unknown = false;
 let offline = !navigator.onLine;
 
+// This function updates the autocomplete list by iterating through the suggestions array and adding HTML elements to the DOM.
 const updateAutocomplete = () => {
   selected = 0;
   $("#autocomplete").empty();
@@ -31,6 +33,7 @@ const updateAutocomplete = () => {
       .children()
       .last()
       .click(() => {
+        // When a suggestion is clicked, the input field loses focus, the fetchAutocomplete function is called, and the input field is updated with the selected label.
         $("#identification").blur();
         fetchAutocomplete(suggestions[i].label);
         $("#identification").val(suggestions[i].label);
@@ -38,9 +41,11 @@ const updateAutocomplete = () => {
   });
 };
 
+// This function changes the selected suggestion in the autocomplete list.
 const changeAutocompleteSelected = (newSelected) => {
   selected = newSelected;
 
+  // Removing the active class from all suggestions and adding it to the newly selected suggestion.
   $("#autocomplete a").removeClass("active");
   $("#autocomplete")
     .children(`:nth-child(${newSelected + 1})`)
@@ -54,6 +59,7 @@ const changeAutocompleteSelected = (newSelected) => {
     .scrollIntoView({ block: "nearest" });
 };
 
+// This function fetches suggestions from a remote SPARQL endpoint.
 const fetchAutocomplete = async (newValue) => {
   try {
     const response = await fetch(
@@ -62,6 +68,7 @@ const fetchAutocomplete = async (newValue) => {
 
     const data = (await response.json()).results.bindings;
 
+    // Parsing the response data and storing the suggestions in the suggestions array.
     suggestions = data.map((element) => ({
       label: element.label.value,
       uri: element.uri.value,
@@ -79,6 +86,7 @@ const fetchAutocomplete = async (newValue) => {
   }
 };
 
+// This event handler is called when the value of the input field changes.
 $("#identification").on("input", (e) => {
   const newValue = e.target.value;
   fetchAutocomplete(newValue);
@@ -101,11 +109,13 @@ $("#identification").keydown((e) => {
     return false;
   }
 
+  // If the ArrowUp key is pressed and a suggestion above the current one is available, update the selected suggestion.
   if (e.key === "ArrowUp") {
     selected > 0 && changeAutocompleteSelected(selected - 1);
     return false;
   }
 
+  // If the ArrowDown key is pressed and a suggestion below the current one is available, update the selected suggestion.
   if (e.key === "ArrowDown") {
     selected < suggestions.length - 1 &&
       changeAutocompleteSelected(selected + 1);
@@ -115,6 +125,7 @@ $("#identification").keydown((e) => {
 
 $("#unknown").click(() => {
   if (offline) {
+    // If the application is offline, disable the input and update the unknown button text.
     $("#identification").val("Unavailable when offline...");
     $("#identification").attr("disabled", true);
     $("#unknown").addClass("btn-disabled");
@@ -125,6 +136,7 @@ $("#unknown").click(() => {
     updateAutocomplete();
     unknown = true;
   } else if (!unknown) {
+    // If the identification is not set to unknown, update the input value and unknown button text.
     unknown = true;
     $("#identification").val("UNKNOWN");
     $("#identification").attr("disabled", true);
@@ -134,6 +146,8 @@ $("#unknown").click(() => {
     suggestions = [];
     updateAutocomplete();
   } else {
+    // If the identification is set to unknown, enable the input and update the unknown button text.
+    unknown = false;
     unknown = false;
     $("#identification").val("");
     $("#identification").attr("disabled", null);
@@ -152,6 +166,7 @@ window.addEventListener("offline", () => {
   $("#unknown").click();
 });
 
+// Define locale for datepicker
 const localeEn = {
   days: [
     "Sunday",
@@ -200,13 +215,14 @@ const localeEn = {
 };
 
 new AirDatepicker("#date", {
-  locale: localeEn,
+  locale: localeEn, // use the locale defined above
   isMobile: true,
   autoClose: true,
-  selectedDates: [new Date()],
+  selectedDates: [new Date()],// set the selected date to today's date
   timepicker: true,
 });
 
+// Define map object and default center coordinates
 let map;
 const mapCenter = { lng: -1.48048735603345, lat: 53.38174552008962 };
 let locationSet = false;
@@ -218,6 +234,7 @@ window.addEventListener("offline", () => {
   }
 });
 
+// Function to use the browser's geolocation
 const useGeolocation = (submit = false) => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -262,6 +279,7 @@ $("#map-button").click(() => {
     $("#map").show();
 
     if (!map) {
+      // Create a new map using Mapbox GL JS
       map = new maplibregl.Map({
         container: "map",
         style: {
@@ -285,6 +303,7 @@ $("#map-button").click(() => {
         },
       });
 
+      // Add the default map navigation control.
       map.addControl(
         new maplibregl.NavigationControl({
           visualizePitch: true,
@@ -293,6 +312,7 @@ $("#map-button").click(() => {
         })
       );
 
+      // Add a geolocate control to the map.
       map.addControl(
         new maplibregl.GeolocateControl({
           positionOptions: {
@@ -305,6 +325,7 @@ $("#map-button").click(() => {
         .setLngLat(map.getCenter())
         .addTo(map);
 
+      // Update the mapCenter variable and marker position whenever the map is moved.
       map.on("move", () => {
         mapCenter.lng = map.getCenter().lng;
         mapCenter.lat = map.getCenter().lat;
@@ -322,11 +343,13 @@ $("#form").submit(async (e) => {
 
   let valid = true;
 
+  // If the user hasn't selected "unknown" and the selected species isn't in the suggestion list, show an error message.
   if (!unknown && suggestions[selected] === undefined) {
     $("#identification-error").removeClass("hidden");
     valid = false;
   }
 
+  // If the location hasn't been set, show an error message and attempt to use geolocation if the user allows it.
   if (!locationSet) {
     $("#location-error").removeClass("hidden");
 
@@ -350,7 +373,7 @@ $("#form").submit(async (e) => {
   let nickname;
 
   try {
-    nickname = await getNickname();
+    nickname = await getNickname();// Calls getNickname() function and assigns the returned value to nickname variable.
   } catch (error) {
     console.error("Nickname not defined");
   }
@@ -364,6 +387,7 @@ $("#form").submit(async (e) => {
     chat: [],
   };
 
+  // If the selected suggestion has a URI, add it to the payload object.
   if (suggestions[selected] !== undefined) {
     payload.identificationURI = suggestions[selected].uri;
   }
