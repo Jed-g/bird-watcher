@@ -186,7 +186,6 @@ router.post("/add", async (req, res) => {
     chat,
     identificationURI,
   } = req.body;
-
   if (
     dateString === undefined ||
     description === undefined ||
@@ -376,6 +375,11 @@ router.get("/post", async (req, res) => {
  */
 router.post("/edit", async (req, res) => {
   const {
+    postId,
+    message,
+    nickname,
+    date: dateString,
+    timeZoneOffset: clientTimeZoneOffset,
     identificationURI
   } = req.body;
 
@@ -409,20 +413,17 @@ router.post("/edit", async (req, res) => {
     }
   }
 
-  let data = {identificationURI};
-
+  let id = req.query.id;
+  const post = await Post.findById(id);
   if (fetchSuccessful) {
-    data = { ...data, uri, label, abstract, identified: true };
+
+    post.uri = uri;
+    post.label = label;
+    post.abstract = abstract;
   }
 
-  const posts = await Post.find({});
-  posts.forEach((post) => {
-    posty = post
-    console.log(post);
-  });
-
   try {
-    await posty.save();
+    await post.save();
     res.redirect("/");
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
