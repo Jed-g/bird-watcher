@@ -1,0 +1,59 @@
+<%- include('partials/header'); -%>
+<div class="w-full flex justify-center">
+  <form class="w-full max-w-md p-4 mt-6" id="form">
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Identification</span>
+      </label>
+      <div class="flex">
+        <div class="relative w-full mr-3">
+          <input
+            type="text"
+            placeholder="Enter bird identification..."
+            id="identification"
+            class="input input-bordered w-full"
+          />
+          <ul
+            class="menu bg-base-100 w-full absolute top-full hidden max-h-60 overflow-y-scroll"
+            id="autocomplete"
+          ></ul>
+        </div>
+        <button class="btn btn-accent" type="button" id="unknown">
+          Unknown
+        </button>
+      </div>
+      <div
+        class="alert alert-error shadow-lg p-2 mt-3 hidden"
+        id="identification-error"
+      >
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current flex-shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="text-sm">Identify bird or click UNKNOWN!</span>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="flex">
+      <a class="btn btn-accent grow" type="button" id="back-button">
+        <p class="text-lg">Back</p>
+      </a>
+      <div class="w-1/12"></div>
+      <button class="btn btn-primary grow" type="submit">
+        <p class="text-lg">Submit</p>
+      </button>
+    </div>
+  </form>
+</div>
+<%- include('partials/footer'); -%>

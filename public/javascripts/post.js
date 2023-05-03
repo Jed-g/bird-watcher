@@ -238,7 +238,13 @@ const insertDataIntoDOM = ({
   label,
   uri,
   abstract,
+  _id,
 }) => {
+  const isOwnPost = nickname === userNickname;
+  if (isOwnPost) {
+    $("#edit-identification").removeClass("hidden");
+    $("#edit-identification").attr("href", "/edit?id=" + _id);
+  }
   // If the post is unidentified, hide certain elements and display "UNKNOWN" as identification
   if (!identified) {
     $("#identification").text("UNKNOWN");
@@ -247,7 +253,7 @@ const insertDataIntoDOM = ({
     $("#abstract-desktop").parent().remove();
     $(".abstract-divider").remove();
   } // Otherwise, display the identification label, URI link, and abstract
-    else {
+  else {
     $("#identification").text(label);
     $("#abstract-mobile").text(abstract);
     $("#abstract-desktop").text(abstract);
