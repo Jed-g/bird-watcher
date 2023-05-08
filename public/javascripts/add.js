@@ -335,6 +335,19 @@ $("#map-button").click(() => {
   }
 });
 
+
+// IMAGES
+const image = document.getElementById("photo")
+const preview = document.querySelector("output")
+
+image.addEventListener("change", function() {
+  preview.innerHTML = `<div class="image">
+  <img src="${URL.createObjectURL(image.files[0])}" alt="image">
+</div>`
+})
+
+
+
 $("#form").submit(async (e) => {
   e.preventDefault();
 
@@ -369,6 +382,7 @@ $("#form").submit(async (e) => {
   const date = $("#date").val();
   const description = $("#description").val();
   const timeZoneOffset = new Date().getTimezoneOffset();
+  const photo = "Photo string";
 
   let nickname;
 
@@ -385,7 +399,10 @@ $("#form").submit(async (e) => {
     userNickname: nickname,
     location: mapCenter.lat + " " + mapCenter.lng,
     chat: [],
+    photo
   };
+
+  console.log(payload);
 
   // If the selected suggestion has a URI, add it to the payload object.
   if (suggestions[selected] !== undefined) {
@@ -406,13 +423,3 @@ $("#form").submit(async (e) => {
     window.location.assign(response.url);
   }
 });
-
-
-const input = document.getElementById("photo")
-const output = document.querySelector("output")
-
-input.addEventListener("change", function() {
-  output.innerHTML = `<div class="image">
-  <img src="${URL.createObjectURL(input.files[0])}" alt="image">
-</div>`
-})

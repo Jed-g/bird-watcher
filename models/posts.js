@@ -11,6 +11,7 @@ const getModel = (connection) => {
     label: { type: String },
     abstract: { type: String },
     uri: { type: String },
+    photo: {type: String}
   });
 
   const Post = connection.model("Post", PostSchema, "posts");
