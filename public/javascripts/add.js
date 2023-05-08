@@ -406,3 +406,13 @@ $("#form").submit(async (e) => {
     window.location.assign(response.url);
   }
 });
+
+
+const input = document.getElementById("photo")
+const output = document.querySelector("output")
+
+input.addEventListener("change", function() {
+  output.innerHTML = `<div class="image">
+  <img src="${URL.createObjectURL(input.files[0])}" alt="image">
+</div>`
+})
