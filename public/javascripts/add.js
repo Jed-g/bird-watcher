@@ -337,14 +337,30 @@ $("#map-button").click(() => {
 
 
 // IMAGES
-const image = document.getElementById("photo")
+const imageInput = document.getElementById("photo")
 const preview = document.querySelector("output")
+let imageBase64; 
 
-image.addEventListener("change", function() {
+
+imageInput.addEventListener("change", function() {
   preview.innerHTML = `<div class="image">
-  <img src="${URL.createObjectURL(image.files[0])}" alt="image">
+  <img src="${URL.createObjectURL(imageInput.files[0])}" alt="image">
 </div>`
 })
+
+imageInput.addEventListener("change", e => {
+  const image = imageInput.files[0];
+  const reader = new FileReader();
+
+  reader.addEventListener("load", () => {
+      // Base64 Data URL 👇
+      console.log(reader.result);
+      imageBase64 = reader.result;
+  });
+
+  reader.readAsDataURL(image);
+});
+
 
 
 
@@ -382,7 +398,7 @@ $("#form").submit(async (e) => {
   const date = $("#date").val();
   const description = $("#description").val();
   const timeZoneOffset = new Date().getTimezoneOffset();
-  const photo = "Photo string";
+  const photo = imageBase64;
 
   let nickname;
 
