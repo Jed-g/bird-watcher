@@ -336,15 +336,17 @@ $("#map-button").click(() => {
 });
 
 
-// IMAGES
+// Get the fields
 const uploadInput = document.getElementById("photoUpload");
 const urlInput = document.getElementById("photoURL");
 const preview = document.querySelector("output");
+
+// Set default photo
 let imageString = "../images/bird.png";
 let urlString = "../images/bird.png";
 let base64String = "../images/bird.png";
 
-// Upload change
+// Convert image to base 64 string and update preview
 uploadInput.addEventListener("change", function() {
   const reader = new FileReader();
 
@@ -358,7 +360,7 @@ uploadInput.addEventListener("change", function() {
   reader.readAsDataURL(uploadInput.files[0]);
 })
 
-// URL change
+// Set URL reference and update preview
 urlInput.addEventListener("change", function() {
   urlString = urlInput.value;
   imageString = urlString;
@@ -368,7 +370,7 @@ urlInput.addEventListener("change", function() {
 });
 
 
-// BUTTONS
+// URL button
 $("#url-button").click(() => {
   $("#url-tool").css("display", "flex");
   $("#upload-tool").hide();
@@ -382,6 +384,7 @@ $("#url-button").click(() => {
 </div>`
 });
 
+// Upload button
 $("#upload-button").click(() => {
   $("#upload-tool").css("display", "flex");
   $("#url-tool").hide();
@@ -392,9 +395,6 @@ $("#upload-button").click(() => {
   <img src="${imageString}" alt="image">
 </div>`;
 });
-
-
-
 
 $("#form").submit(async (e) => {
   e.preventDefault();
