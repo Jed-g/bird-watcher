@@ -338,7 +338,7 @@ $("#map-button").click(() => {
 
 // IMAGES
 const uploadInput = document.getElementById("photoUpload");
-// const urlInput = document.getElementById("photoURL");
+const urlInput = document.getElementById("photoURL");
 const preview = document.querySelector("output");
 let imageString; 
 
@@ -349,24 +349,41 @@ uploadInput.addEventListener("change", function() {
 
   reader.addEventListener("load", () => {
       imageString = reader.result;
-      console.log(imageString);
   });
   reader.readAsDataURL(image);
 
   preview.innerHTML = `<div class="image">
   <img src="${URL.createObjectURL(uploadInput.files[0])}" alt="image">
 </div>`
+
+  urlInput.value = ""
+  console.log(imageString);
 })
 
-// urlInput.addEventListener("change", function() {
-//   imageString = urlInput.value;
+urlInput.addEventListener("change", function() {
+  imageString = urlInput.value;
   
-//   preview.innerHTML = `<div class="image">
-//   <img src="${imageString}" alt="image">
-// </div>`
-// })
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`
 
+uploadInput = '';
+console.log(imageString);
+})
 
+$("#url-button").click(() => {
+  $("#url-tool").css("display", "flex");
+  $("#upload-tool").hide();
+  $("#upload-button").removeClass("btn-active");
+  $("#url-button").addClass("btn-active");
+});
+
+$("#upload-button").click(() => {
+  $("#upload-tool").css("display", "flex");
+  $("#url-tool").hide();
+  $("#url-button").removeClass("btn-active");
+  $("#upload-button").addClass("btn-active");
+});
 
 
 $("#form").submit(async (e) => {

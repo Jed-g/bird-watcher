@@ -72,10 +72,37 @@
       <label class="label">
         <span class="label-text">Photo Upload</span>
       </label>
-      <input id="photoUpload" type="file" accept="image/*" capture>
-      <!-- <input id="photoURL" type="text"> -->
+
+
+      <div class="btn-group">
+        <button type="button" id="url-button" class="btn btn-active w-1/2 !rounded-b-none">
+          Use URL reference
+        </button>
+
+        <button type="button" id="upload-button" class="btn w-1/2 !rounded-b-none">
+         Upload from system files
+        </button>
+      </div>
+
+
+      <div
+          id="upload-tool"
+          class="h-full flex justify-center items-center flex-col p-4 bg-base-300 text-center"
+        >
+        <input id="photoUpload" type="file" accept="image/*" capture>
+      </div>
+
+      <div
+        id="url-tool"
+        class="h-full flex justify-center items-center flex-col p-4 bg-base-300 text-center"
+      >
+        <input id="photoURL" type="text" >
+      </div>
+      
       <output></output>
     </div>
+
+
 
 
     <label class="label"
