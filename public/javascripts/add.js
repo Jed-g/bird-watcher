@@ -340,42 +340,46 @@ $("#map-button").click(() => {
 const uploadInput = document.getElementById("photoUpload");
 const urlInput = document.getElementById("photoURL");
 const preview = document.querySelector("output");
-let imageString; 
+let imageString = "../images/bird.png";
+let urlString = "../images/bird.png";
+let base64String = "../images/bird.png";
 
-
+// Upload change
 uploadInput.addEventListener("change", function() {
-  const image = uploadInput.files[0];
   const reader = new FileReader();
 
   reader.addEventListener("load", () => {
-      imageString = reader.result;
+      base64String = reader.result;
+      imageString = base64String;
+      preview.innerHTML = `<div class="image">
+      <img src="${imageString}" alt="image">
+    </div>`
   });
-  reader.readAsDataURL(image);
-
-  preview.innerHTML = `<div class="image">
-  <img src="${URL.createObjectURL(uploadInput.files[0])}" alt="image">
-</div>`
-
-  urlInput.value = ""
-  console.log(imageString);
+  reader.readAsDataURL(uploadInput.files[0]);
 })
 
+// URL change
 urlInput.addEventListener("change", function() {
-  imageString = urlInput.value;
-  
+  urlString = urlInput.value;
+  imageString = urlString;
   preview.innerHTML = `<div class="image">
   <img src="${imageString}" alt="image">
 </div>`
+});
 
-uploadInput = '';
-console.log(imageString);
-})
 
+// BUTTONS
 $("#url-button").click(() => {
   $("#url-tool").css("display", "flex");
   $("#upload-tool").hide();
   $("#upload-button").removeClass("btn-active");
   $("#url-button").addClass("btn-active");
+  urlString = "../images/bird.png";
+  urlInput.value = ""
+  imageString = urlString;
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`
 });
 
 $("#upload-button").click(() => {
@@ -383,7 +387,13 @@ $("#upload-button").click(() => {
   $("#url-tool").hide();
   $("#url-button").removeClass("btn-active");
   $("#upload-button").addClass("btn-active");
+  imageString = base64String;
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`;
 });
+
+
 
 
 $("#form").submit(async (e) => {
