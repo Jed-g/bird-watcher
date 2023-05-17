@@ -185,6 +185,7 @@ router.post("/add", async (req, res) => {
     location,
     chat,
     identificationURI,
+    photo
   } = req.body;
   if (
     dateString === undefined ||
@@ -192,6 +193,7 @@ router.post("/add", async (req, res) => {
     userNickname === undefined ||
     location === undefined ||
     clientTimeZoneOffset === undefined ||
+    photo === undefined ||
     !Array.isArray(chat)
   ) {
     res.status(400).json({ message: "BAD REQUEST" });
@@ -239,6 +241,7 @@ router.post("/add", async (req, res) => {
     userNickname,
     location,
     chat,
+    photo
   };
 
   if (fetchSuccessful) {

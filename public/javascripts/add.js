@@ -335,6 +335,67 @@ $("#map-button").click(() => {
   }
 });
 
+
+// Get the fields
+const uploadInput = document.getElementById("photoUpload");
+const urlInput = document.getElementById("photoURL");
+const preview = document.querySelector("output");
+
+// Set default photo
+let imageString = "../images/bird.png";
+let urlString = "../images/bird.png";
+let base64String = "../images/bird.png";
+
+// Convert image to base 64 string and update preview
+uploadInput.addEventListener("change", function() {
+  const reader = new FileReader();
+
+  reader.addEventListener("load", () => {
+      base64String = reader.result;
+      imageString = base64String;
+      preview.innerHTML = `<div class="image">
+      <img src="${imageString}" alt="image">
+    </div>`
+  });
+  reader.readAsDataURL(uploadInput.files[0]);
+})
+
+// Set URL reference and update preview
+urlInput.addEventListener("change", function() {
+  urlString = urlInput.value;
+  imageString = urlString;
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`
+});
+
+
+// URL button
+$("#url-button").click(() => {
+  $("#url-tool").css("display", "flex");
+  $("#upload-tool").hide();
+  $("#upload-button").removeClass("btn-active");
+  $("#url-button").addClass("btn-active");
+  urlString = "../images/bird.png";
+  urlInput.value = ""
+  imageString = urlString;
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`
+});
+
+// Upload button
+$("#upload-button").click(() => {
+  $("#upload-tool").css("display", "flex");
+  $("#url-tool").hide();
+  $("#url-button").removeClass("btn-active");
+  $("#upload-button").addClass("btn-active");
+  imageString = base64String;
+  preview.innerHTML = `<div class="image">
+  <img src="${imageString}" alt="image">
+</div>`;
+});
+
 $("#form").submit(async (e) => {
   e.preventDefault();
 
@@ -369,6 +430,7 @@ $("#form").submit(async (e) => {
   const date = $("#date").val();
   const description = $("#description").val();
   const timeZoneOffset = new Date().getTimezoneOffset();
+  const photo = imageString;
 
   let nickname;
 
@@ -385,7 +447,10 @@ $("#form").submit(async (e) => {
     userNickname: nickname,
     location: mapCenter.lat + " " + mapCenter.lng,
     chat: [],
+    photo
   };
+
+  console.log(payload);
 
   // If the selected suggestion has a URI, add it to the payload object.
   if (suggestions[selected] !== undefined) {
