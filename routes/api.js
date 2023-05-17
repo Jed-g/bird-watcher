@@ -341,8 +341,8 @@ router.get("/post", async (req, res) => {
  *                   type: string
  *                   description: Status of the request.
  *                   example: INTERNAL SERVER ERROR
-*/
- router.post("/message", async (req, res) => {
+ */
+router.post("/message", async (req, res) => {
   try {
     const {
       postId,
@@ -367,21 +367,13 @@ router.get("/post", async (req, res) => {
   }
 });
 
-
 /**
  * @swagger
  * /api/edit:
  *   post:
  */
 router.post("/edit", async (req, res) => {
-  const {
-    postId,
-    message,
-    nickname,
-    date: dateString,
-    timeZoneOffset: clientTimeZoneOffset,
-    identificationURI
-  } = req.body;
+  const { identificationURI } = req.body;
 
   let fetchSuccessful = false;
   let uri;
@@ -395,10 +387,10 @@ router.post("/edit", async (req, res) => {
           bindings: [data],
         },
       } = (
-          await axios.get(
-              "https://dbpedia.org/sparql?format=json&query=" +
-              searchByURI(identificationURI)
-          )
+        await axios.get(
+          "https://dbpedia.org/sparql?format=json&query=" +
+            searchByURI(identificationURI)
+        )
       ).data;
 
       ({
@@ -413,13 +405,23 @@ router.post("/edit", async (req, res) => {
     }
   }
 
+  if (!fetchSuccessful && identificationURI !== undefined){
+    res.status(500).json({ status: "INTERNAL SERVER ERROR" });
+    return;
+  }
+
   let id = req.query.id;
   const post = await Post.findById(id);
-  if (fetchSuccessful) {
-
+  if (identificationURI !== undefined) {
+    post.identified = true;
     post.uri = uri;
     post.label = label;
     post.abstract = abstract;
+  } else {
+    post.identified = false;
+    post.uri = undefined;
+    post.label = undefined;
+    post.abstract = undefined;
   }
 
   try {

@@ -171,6 +171,7 @@ window.addEventListener("offline", () => {
   offline = true;
   $("#unknown").click();
 });
+
 $("#form").submit(async (e) => {
   e.preventDefault();
 
@@ -186,14 +187,6 @@ $("#form").submit(async (e) => {
 
   if (!valid) {
     return;
-  }
-
-  let nickname;
-
-  try {
-    nickname = await getNickname(); // Calls getNickname() function and assigns the returned value to nickname variable.
-  } catch (error) {
-    console.error("Nickname not defined");
   }
 
   const payload = {};
