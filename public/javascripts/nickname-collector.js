@@ -1,4 +1,4 @@
-import { getByIdFromObjectStore } from "./indexeddb.js";
+import { getByIdFromObjectStore, getAllFromObjectStore } from "./indexeddb.js";
 
 if ("serviceWorker" in navigator) {
   // Register the service worker with the file '/sw.js'
@@ -10,6 +10,19 @@ if ("serviceWorker" in navigator) {
       registration.active.postMessage("online");
     });
   });
+
+  (async () => {
+    const [newPosts, newMessages, postEdits] = [
+      await getAllFromObjectStore("syncWhenOnlineNewPosts"),
+      await getAllFromObjectStore("syncWhenOnlineNewMessages"),
+      await getAllFromObjectStore("syncWhenOnlinePostEdits"),
+    ];
+    if (newPosts.length > 0 || newMessages.length > 0 || postEdits.length > 0) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active.postMessage("online");
+      });
+    }
+  })();
 
   // Add an event listener to the service worker that listens for incoming messages
   navigator.serviceWorker.addEventListener("message", async (e) => {
@@ -55,6 +68,10 @@ const getNickname = () => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 
@@ -108,6 +125,10 @@ const setNickname = (newNickname) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     dbOpenRequest.onsuccess = () => {
@@ -124,7 +145,6 @@ const setNickname = (newNickname) => {
     };
   });
 };
-
 
 //Function that handles saving the new nickname entered by the user
 const handleSave = () => {

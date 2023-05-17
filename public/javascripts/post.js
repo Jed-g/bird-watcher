@@ -236,6 +236,7 @@ const insertDataIntoDOM = ({
   chat,
   identified,
   label,
+  photo,
   uri,
   abstract,
   _id,
@@ -268,9 +269,10 @@ const insertDataIntoDOM = ({
   $("#date-mobile").text(
     date.toLocaleString("en-GB", { dateStyle: "full", timeStyle: "short" })
   );
-  // Display the user's nickname, post description, and rounded location coordinates
+  // Display the user's nickname, post description, uploaded image, and rounded location coordinates
   $("#user").text(userNickname);
   $(".description").text(description?.length > 0 ? description : "NONE");
+  $("#image").attr("src", photo);
 
   const DECIMAL_PLACES_TO_ROUND_TO = 8;
 

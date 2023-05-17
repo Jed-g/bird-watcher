@@ -218,7 +218,7 @@ new AirDatepicker("#date", {
   locale: localeEn, // use the locale defined above
   isMobile: true,
   autoClose: true,
-  selectedDates: [new Date()],// set the selected date to today's date
+  selectedDates: [new Date()], // set the selected date to today's date
   timepicker: true,
 });
 
@@ -335,6 +335,21 @@ $("#map-button").click(() => {
   }
 });
 
+let photoBase64;
+
+$("#photo-upload").on("change", (e) => {
+  const reader = new FileReader();
+
+  reader.addEventListener("load", () => {
+    $("#preview").html(`<div class="preview">
+      <img src="${reader.result}" alt="Preview Image" class="preview-img">
+    </div>`);
+
+    photoBase64 = reader.result;
+  });
+  reader.readAsDataURL(e.target.files[0]);
+});
+
 $("#form").submit(async (e) => {
   e.preventDefault();
 
@@ -373,7 +388,7 @@ $("#form").submit(async (e) => {
   let nickname;
 
   try {
-    nickname = await getNickname();// Calls getNickname() function and assigns the returned value to nickname variable.
+    nickname = await getNickname(); // Calls getNickname() function and assigns the returned value to nickname variable.
   } catch (error) {
     console.error("Nickname not defined");
   }
@@ -390,6 +405,10 @@ $("#form").submit(async (e) => {
   // If the selected suggestion has a URI, add it to the payload object.
   if (suggestions[selected] !== undefined) {
     payload.identificationURI = suggestions[selected].uri;
+  }
+
+  if (photoBase64 !== undefined) {
+    payload.photo = photoBase64;
   }
 
   const requestOptions = {

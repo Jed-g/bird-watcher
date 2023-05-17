@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 const mongoose = require("mongoose");
 
@@ -185,6 +187,7 @@ router.post("/add", async (req, res) => {
     location,
     chat,
     identificationURI,
+    photo,
   } = req.body;
   if (
     dateString === undefined ||
@@ -248,7 +251,34 @@ router.post("/add", async (req, res) => {
   const post = new Post(data);
 
   try {
-    await post.save();
+    const savedPost = await post.save();
+
+    if (photo !== undefined) {
+      if (!photo.includes(";base64,")) {
+        throw new Error("Invalid image!");
+      }
+
+      const base64Image = photo.split(";base64,").pop();
+
+      if (!fs.existsSync(path.join(__dirname, "..", "public", "photos"))) {
+        fs.mkdirSync(path.join(__dirname, "..", "public", "photos"), {
+          recursive: true,
+        });
+      }
+
+      fs.writeFileSync(
+        path.join(__dirname, "..", "public", "photos", `${savedPost._id}.png`),
+        base64Image,
+        { encoding: "base64" },
+        () => {
+          console.log("Image file created");
+        }
+      );
+
+      savedPost.photo = `/photos/${savedPost._id}.png`;
+      await savedPost.save();
+    }
+
     res.redirect("/");
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
@@ -341,8 +371,8 @@ router.get("/post", async (req, res) => {
  *                   type: string
  *                   description: Status of the request.
  *                   example: INTERNAL SERVER ERROR
-*/
- router.post("/message", async (req, res) => {
+ */
+router.post("/message", async (req, res) => {
   try {
     const {
       postId,
@@ -367,21 +397,13 @@ router.get("/post", async (req, res) => {
   }
 });
 
-
 /**
  * @swagger
  * /api/edit:
  *   post:
  */
 router.post("/edit", async (req, res) => {
-  const {
-    postId,
-    message,
-    nickname,
-    date: dateString,
-    timeZoneOffset: clientTimeZoneOffset,
-    identificationURI
-  } = req.body;
+  const { identificationURI } = req.body;
 
   let fetchSuccessful = false;
   let uri;
@@ -395,10 +417,10 @@ router.post("/edit", async (req, res) => {
           bindings: [data],
         },
       } = (
-          await axios.get(
-              "https://dbpedia.org/sparql?format=json&query=" +
-              searchByURI(identificationURI)
-          )
+        await axios.get(
+          "https://dbpedia.org/sparql?format=json&query=" +
+            searchByURI(identificationURI)
+        )
       ).data;
 
       ({
@@ -413,18 +435,28 @@ router.post("/edit", async (req, res) => {
     }
   }
 
+  if (!fetchSuccessful && identificationURI !== undefined) {
+    res.status(500).json({ status: "INTERNAL SERVER ERROR" });
+    return;
+  }
+
   let id = req.query.id;
   const post = await Post.findById(id);
-  if (fetchSuccessful) {
-
+  if (identificationURI !== undefined) {
+    post.identified = true;
     post.uri = uri;
     post.label = label;
     post.abstract = abstract;
+  } else {
+    post.identified = false;
+    post.uri = undefined;
+    post.label = undefined;
+    post.abstract = undefined;
   }
 
   try {
     await post.save();
-    res.redirect("/");
+    res.redirect("/post?id=" + req.query.id);
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
   }

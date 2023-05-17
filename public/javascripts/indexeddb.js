@@ -28,6 +28,10 @@ const addToObjectStore = (data, storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     // When the database is successfully opened, add the data to the specified object store
@@ -73,6 +77,10 @@ const getByIdFromObjectStore = (id, storeName) => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 
@@ -122,6 +130,10 @@ const updateByIdInObjectStore = (id, data, storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     // Adds the data to the specified object store in the database
@@ -170,6 +182,10 @@ const getAllFromObjectStore = (storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     // Adds the data to the specified object store in the database
@@ -216,6 +232,10 @@ const clearObjectStore = (storeName) => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 

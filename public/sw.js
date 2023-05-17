@@ -9,6 +9,7 @@ oninstall = (e) => {
         "/add",
         "/nearby",
         "/post",
+        "/edit",
         "/stylesheets/style.css",
         "/stylesheets/custom.css",
         "/javascripts/add.js",
@@ -17,6 +18,7 @@ oninstall = (e) => {
         "/javascripts/indexeddb.js",
         "/javascripts/post.js",
         "/javascripts/nearby.js",
+        "/javascripts/edit.js",
         "/lib/air-datepicker.min.css",
         "/lib/air-datepicker.min.js",
         "/lib/maplibre-gl.css",
@@ -82,6 +84,10 @@ const addToObjectStore = (data, storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     dbOpenRequest.onsuccess = () => {
@@ -123,6 +129,10 @@ const getByIdFromObjectStore = (id, storeName) => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 
@@ -166,6 +176,10 @@ const updateByIdInObjectStore = (id, data, storeName) => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 
@@ -212,6 +226,10 @@ const getAllFromObjectStore = (storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     dbOpenRequest.onsuccess = () => {
@@ -255,6 +273,10 @@ const clearObjectStore = (storeName) => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     dbOpenRequest.onsuccess = () => {
@@ -275,11 +297,9 @@ const sync = async () => {
   console.log("syncing");
 
   const newPostFetchRequests = [];
-
   const syncWhenOnlineNewPosts = await getAllFromObjectStore(
     "syncWhenOnlineNewPosts"
   );
-
   syncWhenOnlineNewPosts.forEach((obj) => {
     const requestOptions = {
       method: "POST",
@@ -290,16 +310,24 @@ const sync = async () => {
     newPostFetchRequests.push(fetch("/api/add", requestOptions));
   });
 
-  await clearObjectStore("syncWhenOnlineNewPosts");
+  const editFetchRequests = [];
+  const syncWhenOnlinePostEdits = await getAllFromObjectStore(
+    "syncWhenOnlinePostEdits"
+  );
+  syncWhenOnlinePostEdits.forEach(({ _id, identificationURI }) => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identificationURI }),
+    };
 
-  await Promise.all(newPostFetchRequests);
+    editFetchRequests.push(fetch("/api/edit?id=" + _id, requestOptions));
+  });
 
   const newMessageFetchRequests = [];
-
   const syncWhenOnlineNewMessages = await getAllFromObjectStore(
     "syncWhenOnlineNewMessages"
   );
-
   syncWhenOnlineNewMessages.forEach((obj) => {
     const requestOptions = {
       method: "POST",
@@ -310,19 +338,34 @@ const sync = async () => {
     newMessageFetchRequests.push(fetch("/api/message", requestOptions));
   });
 
-  await clearObjectStore("syncWhenOnlineNewMessages");
+  let requestsSuccessful = false;
 
-  await Promise.all(newMessageFetchRequests);
+  try {
+    // All changes made when offline are sent to the server asynchronously for performance
+    await Promise.all([
+      ...newPostFetchRequests,
+      ...editFetchRequests,
+      ...newMessageFetchRequests,
+    ]);
 
-  const response = await fetch("/api/recent");
-  const data = await response.json();
-  await clearObjectStore("posts");
-  data.forEach((element) => addToObjectStore(element, "posts"));
+    await clearObjectStore("syncWhenOnlineNewPosts");
+    await clearObjectStore("syncWhenOnlinePostEdits");
+    await clearObjectStore("syncWhenOnlineNewMessages");
 
-  const clients_ = await clients.matchAll({ type: "window" });
-  clients_.forEach((client) => {
-    client.postMessage("reload");
-  });
+    requestsSuccessful = true;
+  } catch (error) {}
+
+  if (requestsSuccessful) {
+    const response = await fetch("/api/recent");
+    const data = await response.json();
+    await clearObjectStore("posts");
+    data.forEach((element) => addToObjectStore(element, "posts"));
+
+    const clients_ = await clients.matchAll({ type: "window" });
+    clients_.forEach((client) => {
+      client.postMessage("reload");
+    });
+  }
 };
 
 onmessage = (e) => {
@@ -335,7 +378,7 @@ const handleRecent = async (request) => {
   let response;
   try {
     response = await fetch(request);
-
+    await clearObjectStore("posts");
     const responseClone = response.clone();
     const data = await responseClone.json();
 
@@ -427,6 +470,62 @@ const handleAdd = async (request) => {
   return response;
 };
 
+const handleEdit = async (request) => {
+  let requestClone = request.clone();
+  let response;
+  const data = await requestClone.json();
+  try {
+    response = await fetch(request);
+  } catch (error) {
+    const params = new Proxy(new URLSearchParams(request.url.split("?")[1]), {
+      get: (params, key) => params.get(key),
+    });
+
+    if (await getByIdFromObjectStore(params.id, "posts")) {
+      data._id = params.id;
+      await addToObjectStore(data, "syncWhenOnlinePostEdits");
+
+      const cachedPost = await getByIdFromObjectStore(params.id, "posts");
+
+      if (data.identificationURI === undefined) {
+        cachedPost.identified = false;
+      } else {
+        cachedPost.identified = true;
+        cachedPost.label = "Enable internet access to view latest version";
+        cachedPost.abstract = "Enable internet access to view latest version";
+        cachedPost.uri = "/post?id=" + params.id;
+      }
+
+      await updateByIdInObjectStore(params.id, cachedPost, "posts");
+    } else {
+      const offlinePost = await getByIdFromObjectStore(
+        parseInt(params.id),
+        "syncWhenOnlineNewPosts"
+      );
+
+      if (data.identificationURI === undefined) {
+        offlinePost.identificationURI = undefined;
+        offlinePost.identified = false;
+      } else {
+        offlinePost.identificationURI = data.identificationURI;
+        offlinePost.identified = true;
+        offlinePost.label = "Enable internet access to view latest version";
+        offlinePost.abstract = "Enable internet access to view latest version";
+        offlinePost.uri = "/post?id=" + params.id;
+      }
+
+      await updateByIdInObjectStore(
+        parseInt(params.id),
+        offlinePost,
+        "syncWhenOnlineNewPosts"
+      );
+    }
+
+    response = Response.redirect("/post?id=" + params.id);
+  }
+  return response;
+};
+
 const handleViewPost = async (request) => {
   const params = new Proxy(new URLSearchParams(request.url.split("?")[1]), {
     get: (params, key) => params.get(key),
@@ -485,6 +584,14 @@ onfetch = (e) => {
               return fetch(e.request);
             }
           });
+        case "/edit":
+          return caches.match("/edit").then((response) => {
+            if (response) {
+              return response;
+            } else {
+              return fetch(e.request);
+            }
+          });
         case "/api/recent":
           return handleRecent(e.request);
         case "/api/add":
@@ -495,6 +602,8 @@ onfetch = (e) => {
           return handleSendMessage(e.request);
         case "/api/nearby":
           return handleNearby(e.request);
+        case "/api/edit":
+          return handleEdit(e.request);
         default:
           return caches.match(e.request).then((response) => {
             if (response) {

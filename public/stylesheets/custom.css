@@ -32,6 +32,19 @@ body {
   border-radius: var(--rounded-btn);
 }
 
+.preview {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-img {
+  object-fit: contain;
+  max-height: 288px;
+  border-radius: var(--rounded-btn);
+  overflow: hidden;
+}
+
 .table-height {
   height: calc(100vh - 124px);
 }
