@@ -1,9 +1,3 @@
-import { getNickname } from "./nickname-collector.js";
-import {
-  getByIdFromObjectStore,
-  updateByIdInObjectStore,
-} from "./indexeddb.js";
-
 // This function generates a SPARQL query string with a keyword parameter.
 const searchQuery = (keyword) =>
   encodeURIComponent(`SELECT DISTINCT ?uri ?label
@@ -132,8 +126,6 @@ $("#identification").keydown((e) => {
 $("#unknown").click(() => {
   if (offline) {
     // If the application is offline, disable the input and update the unknown button text.
-    $("#identification").val("Unavailable when offline...");
-    $("#identification").attr("disabled", true);
     $("#unknown").addClass("btn-disabled");
     $("#unknown").removeClass("btn-primary");
     $("#unknown").removeClass("btn-accent");
@@ -141,6 +133,8 @@ $("#unknown").click(() => {
     suggestions = [];
     updateAutocomplete();
     unknown = true;
+    $("#identification").val("Unavailable when offline...");
+    $("#identification").attr("disabled", true);
   } else if (!unknown) {
     // If the identification is not set to unknown, update the input value and unknown button text.
     unknown = true;
@@ -210,6 +204,6 @@ $("#form").submit(async (e) => {
   if (!response.ok) {
     $(":submit").css("backgroundColor", "red");
   } else {
-    window.location.href = "/post" + window.location.search;
+    window.location.assign("/post" + window.location.search);
   }
 });

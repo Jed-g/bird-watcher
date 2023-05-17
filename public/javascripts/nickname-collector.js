@@ -56,6 +56,10 @@ const getNickname = () => {
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
       }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
+      }
     };
 
     // when the database is successfully opened, try to get the nickname from the 'nickname' object store
@@ -107,6 +111,10 @@ const setNickname = (newNickname) => {
 
       if (!db.objectStoreNames.contains("posts")) {
         db.createObjectStore("posts", { keyPath: "_id" });
+      }
+
+      if (!db.objectStoreNames.contains("syncWhenOnlinePostEdits")) {
+        db.createObjectStore("syncWhenOnlinePostEdits", { keyPath: "_id" });
       }
     };
 

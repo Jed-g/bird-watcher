@@ -405,7 +405,7 @@ router.post("/edit", async (req, res) => {
     }
   }
 
-  if (!fetchSuccessful && identificationURI !== undefined){
+  if (!fetchSuccessful && identificationURI !== undefined) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
     return;
   }
@@ -426,7 +426,7 @@ router.post("/edit", async (req, res) => {
 
   try {
     await post.save();
-    res.redirect("/");
+    res.redirect("/post?id=" + req.query.id);
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
   }
