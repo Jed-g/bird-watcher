@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 const mongoose = require("mongoose");
 
@@ -185,7 +187,7 @@ router.post("/add", async (req, res) => {
     location,
     chat,
     identificationURI,
-    photo
+    photo,
   } = req.body;
   if (
     dateString === undefined ||
@@ -193,7 +195,6 @@ router.post("/add", async (req, res) => {
     userNickname === undefined ||
     location === undefined ||
     clientTimeZoneOffset === undefined ||
-    photo === undefined ||
     !Array.isArray(chat)
   ) {
     res.status(400).json({ message: "BAD REQUEST" });
@@ -241,7 +242,6 @@ router.post("/add", async (req, res) => {
     userNickname,
     location,
     chat,
-    photo
   };
 
   if (fetchSuccessful) {
@@ -251,7 +251,34 @@ router.post("/add", async (req, res) => {
   const post = new Post(data);
 
   try {
-    await post.save();
+    const savedPost = await post.save();
+
+    if (photo !== undefined) {
+      if (!photo.includes(";base64,")) {
+        throw new Error("Invalid image!");
+      }
+
+      const base64Image = photo.split(";base64,").pop();
+
+      if (!fs.existsSync(path.join(__dirname, "..", "public", "photos"))) {
+        fs.mkdirSync(path.join(__dirname, "..", "public", "photos"), {
+          recursive: true,
+        });
+      }
+
+      fs.writeFileSync(
+        path.join(__dirname, "..", "public", "photos", `${savedPost._id}.png`),
+        base64Image,
+        { encoding: "base64" },
+        () => {
+          console.log("Image file created");
+        }
+      );
+
+      savedPost.photo = `/photos/${savedPost._id}.png`;
+      await savedPost.save();
+    }
+
     res.redirect("/");
   } catch (error) {
     res.status(500).json({ status: "INTERNAL SERVER ERROR" });
