@@ -297,11 +297,9 @@ const sync = async () => {
   console.log("syncing");
 
   const newPostFetchRequests = [];
-
   const syncWhenOnlineNewPosts = await getAllFromObjectStore(
     "syncWhenOnlineNewPosts"
   );
-
   syncWhenOnlineNewPosts.forEach((obj) => {
     const requestOptions = {
       method: "POST",
@@ -312,14 +310,10 @@ const sync = async () => {
     newPostFetchRequests.push(fetch("/api/add", requestOptions));
   });
 
-  await clearObjectStore("syncWhenOnlineNewPosts");
-
   const editFetchRequests = [];
-
   const syncWhenOnlinePostEdits = await getAllFromObjectStore(
     "syncWhenOnlinePostEdits"
   );
-
   syncWhenOnlinePostEdits.forEach(({ _id, identificationURI }) => {
     const requestOptions = {
       method: "POST",
@@ -330,14 +324,10 @@ const sync = async () => {
     editFetchRequests.push(fetch("/api/edit?id=" + _id, requestOptions));
   });
 
-  await clearObjectStore("syncWhenOnlinePostEdits");
-
   const newMessageFetchRequests = [];
-
   const syncWhenOnlineNewMessages = await getAllFromObjectStore(
     "syncWhenOnlineNewMessages"
   );
-
   syncWhenOnlineNewMessages.forEach((obj) => {
     const requestOptions = {
       method: "POST",
@@ -348,24 +338,34 @@ const sync = async () => {
     newMessageFetchRequests.push(fetch("/api/message", requestOptions));
   });
 
-  await clearObjectStore("syncWhenOnlineNewMessages");
+  let requestsSuccessful = false;
 
-  // All changes made when offline are sent to the server asynchronously for performance
-  await Promise.all([
-    ...newPostFetchRequests,
-    ...editFetchRequests,
-    ...newMessageFetchRequests,
-  ]);
+  try {
+    // All changes made when offline are sent to the server asynchronously for performance
+    await Promise.all([
+      ...newPostFetchRequests,
+      ...editFetchRequests,
+      ...newMessageFetchRequests,
+    ]);
 
-  const response = await fetch("/api/recent");
-  const data = await response.json();
-  await clearObjectStore("posts");
-  data.forEach((element) => addToObjectStore(element, "posts"));
+    await clearObjectStore("syncWhenOnlineNewPosts");
+    await clearObjectStore("syncWhenOnlinePostEdits");
+    await clearObjectStore("syncWhenOnlineNewMessages");
 
-  const clients_ = await clients.matchAll({ type: "window" });
-  clients_.forEach((client) => {
-    client.postMessage("reload");
-  });
+    requestsSuccessful = true;
+  } catch (error) {}
+
+  if (requestsSuccessful) {
+    const response = await fetch("/api/recent");
+    const data = await response.json();
+    await clearObjectStore("posts");
+    data.forEach((element) => addToObjectStore(element, "posts"));
+
+    const clients_ = await clients.matchAll({ type: "window" });
+    clients_.forEach((client) => {
+      client.postMessage("reload");
+    });
+  }
 };
 
 onmessage = (e) => {

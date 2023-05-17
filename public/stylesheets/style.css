@@ -1864,6 +1864,9 @@ html {
 .mt-6 {
   margin-top: 1.5rem;
 }
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
 .flex {
   display: flex;
 }
@@ -2028,6 +2031,9 @@ html {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+.font-medium {
+  font-weight: 500;
 }
 .opacity-50 {
   opacity: 0.5;
