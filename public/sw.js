@@ -57,6 +57,22 @@ onactivate = (e) => {
   self.clients.claim();
 };
 
+const cacheImageByURL = async (url) => {
+  const request = new Request(url);
+
+  caches.match(request).then((response) => {
+    if (!response) {
+      fetch(request).then((response) => {
+        if (response && response.status === 200 && response.type === "basic") {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, response);
+          });
+        }
+      });
+    }
+  });
+};
+
 const addToObjectStore = (data, storeName) => {
   return new Promise((resolve) => {
     const dbOpenRequest = indexedDB.open("birdWatcher");
@@ -383,6 +399,7 @@ const handleRecent = async (request) => {
     const data = await responseClone.json();
 
     data.forEach((element) => addToObjectStore(element, "posts"));
+    data.forEach(({ photo }) => cacheImageByURL(photo));
   } catch (error) {
     const data = [
       ...(await getAllFromObjectStore("posts")),
@@ -433,6 +450,7 @@ const handleNearby = async (request) => {
     const data = await responseClone.json();
 
     data.forEach((element) => addToObjectStore(element, "posts"));
+    data.forEach(({ photo }) => cacheImageByURL(photo));
   } catch (error) {
     const data = [
       ...(await getAllFromObjectStore("posts")),
@@ -572,7 +590,11 @@ const handleSendMessage = async (request) => {
 onfetch = (e) => {
   const url = new URL(e.request.url);
   const target = url.pathname;
-  // const method = e.request.method;
+
+  if (!e.request.url.startsWith("http")) {
+    return;
+  }
+
   e.respondWith(
     (async () => {
       switch (target) {
@@ -609,7 +631,23 @@ onfetch = (e) => {
             if (response) {
               return response;
             } else {
-              return fetch(e.request);
+              return fetch(e.request).then((response) => {
+                if (
+                  !response ||
+                  response.status !== 200 ||
+                  response.type !== "basic"
+                ) {
+                  return response;
+                }
+
+                const responseToCache = response.clone();
+
+                caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(e.request, responseToCache);
+                });
+
+                return response;
+              });
             }
           });
       }
