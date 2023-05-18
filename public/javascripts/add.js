@@ -220,6 +220,7 @@ new AirDatepicker("#date", {
   autoClose: true,
   selectedDates: [new Date()], // set the selected date to today's date
   timepicker: true,
+  maxDate: new Date(),
 });
 
 // Define map object and default center coordinates
@@ -394,6 +395,7 @@ $("#form").submit(async (e) => {
   }
 
   const payload = {
+    date,
     description,
     timeZoneOffset,
     userNickname: nickname,
@@ -404,15 +406,6 @@ $("#form").submit(async (e) => {
   // If the selected suggestion has a URI, add it to the payload object.
   if (suggestions[selected] !== undefined) {
     payload.identificationURI = suggestions[selected].uri;
-  }
-
-  const newDate = new Date (date);
-
-  if (newDate > Date.now()) {
-    payload.date = Date.now();
-  }
-  else{
-    payload.date = date;
   }
 
   if (photoBase64 !== undefined) {
