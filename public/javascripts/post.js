@@ -275,6 +275,10 @@ const insertDataIntoDOM = ({
 
   if (photo) {
     $("#image").attr("src", photo);
+    $("#image").attr(
+      "onerror",
+      "this.onerror=null;this.src='/images/image-load-error.png';"
+    );
   } else {
     $("#image").hide();
     $("#no-image").removeClass("hidden");
