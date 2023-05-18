@@ -272,7 +272,14 @@ const insertDataIntoDOM = ({
   // Display the user's nickname, post description, uploaded image, and rounded location coordinates
   $("#user").text(userNickname);
   $(".description").text(description?.length > 0 ? description : "NONE");
-  $("#image").attr("src", photo);
+
+  if (photo) {
+    $("#image").attr("src", photo);
+  } else {
+    $("#image").hide();
+    $("#no-image").removeClass("hidden");
+    $("#no-image").addClass("flex");
+  }
 
   const DECIMAL_PLACES_TO_ROUND_TO = 8;
 
