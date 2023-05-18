@@ -2183,6 +2183,18 @@ html {
     display: none;
   }
 
+  .sm\:h-36 {
+    height: 9rem;
+  }
+
+  .sm\:w-60 {
+    width: 15rem;
+  }
+
+  .sm\:max-w-sm {
+    max-width: 24rem;
+  }
+
   .sm\:flex-row {
     flex-direction: row;
   }
@@ -2193,13 +2205,41 @@ html {
 }
 @media (min-width: 768px) {
 
+  .md\:w-80 {
+    width: 20rem;
+  }
+
   .md\:max-w-2xl {
     max-width: 42rem;
+  }
+
+  .md\:max-w-md {
+    max-width: 28rem;
   }
 }
 @media (min-width: 1024px) {
 
+  .lg\:w-96 {
+    width: 24rem;
+  }
+
   .lg\:max-w-5xl {
+    max-width: 64rem;
+  }
+
+  .lg\:max-w-xl {
+    max-width: 36rem;
+  }
+}
+@media (min-width: 1280px) {
+
+  .xl\:max-w-3xl {
+    max-width: 48rem;
+  }
+}
+@media (min-width: 1536px) {
+
+  .\32xl\:max-w-5xl {
     max-width: 64rem;
   }
 }

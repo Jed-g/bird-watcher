@@ -126,8 +126,6 @@ $("#identification").keydown((e) => {
 $("#unknown").click(() => {
   if (offline) {
     // If the application is offline, disable the input and update the unknown button text.
-    $("#identification").val("Unavailable when offline...");
-    $("#identification").attr("disabled", true);
     $("#unknown").addClass("btn-disabled");
     $("#unknown").removeClass("btn-primary");
     $("#unknown").removeClass("btn-accent");
@@ -135,6 +133,8 @@ $("#unknown").click(() => {
     suggestions = [];
     updateAutocomplete();
     unknown = true;
+    $("#identification").val("Unavailable when offline...");
+    $("#identification").attr("disabled", true);
   } else if (!unknown) {
     // If the identification is not set to unknown, update the input value and unknown button text.
     unknown = true;
