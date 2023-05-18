@@ -1,3 +1,5 @@
+import { getNickname } from "./nickname-collector.js";
+
 let map;
 const mapCenter = { lng: -1.48048735603345, lat: 53.38174552008962 };
 let locationSet = false;
@@ -34,7 +36,7 @@ const distance = (lat1, lon1, lat2, lon2, unit) => {
 };
 
 // Function to insert data into the HTML DOM
-const insertDataIntoDOM = (data) => {
+const insertDataIntoDOM = (data, currentNickname) => {
   $("#table-container").removeClass("hidden");
   $("#table-container").css("display", "flex");
   $("#location-selector").hide();
@@ -54,15 +56,22 @@ const insertDataIntoDOM = (data) => {
     const cloned = $("#initial-row").clone(true);
     cloned.removeAttr("id");
     cloned.removeClass("hidden");
+
+    if (userNickname === currentNickname) {
+      cloned
+        .children(":nth-child(1)")
+        .html("<p class='checkmark text-xl'>✓</p>");
+    }
+
     // Set the label, distance, and user nickname
     const labelText = identified ? label : "UNKNOWN";
     cloned
-      .children(":nth-child(1)")
+      .children(":nth-child(2)")
       .text(labelText.length > 20 ? labelText.slice(0, 17) + "..." : labelText);
-    cloned.children(":nth-child(2)").text(distanceFromUserInKms);
-    cloned.children(":nth-child(3)").text(userNickname);
+    cloned.children(":nth-child(3)").text(distanceFromUserInKms);
+    cloned.children(":nth-child(4)").text(userNickname);
     cloned
-      .children(":nth-child(4)")
+      .children(":nth-child(5)")
       .children(":first")
       .attr("href", "/post?id=" + _id);
     cloned.appendTo("tbody");
@@ -85,8 +94,11 @@ $("#location-button").click(async () => {
   // Send a request to the server to retrieve nearby locations
   const response = await fetch("/api/nearby", requestOptions);
   const data = await response.json();
+
+  const currentNickname = await getNickname();
+
   // Insert the retrieved data into the DOM
-  insertDataIntoDOM(data);
+  insertDataIntoDOM(data, currentNickname);
 });
 
 window.addEventListener("offline", () => {

@@ -49,6 +49,11 @@ body {
   height: calc(100vh - 124px);
 }
 
+.checkmark {
+  font-weight: 700;
+  color: hsl(var(--su));
+}
+
 @supports (height: 100dvh) {
   .table-height {
     height: calc(100dvh - 124px);
