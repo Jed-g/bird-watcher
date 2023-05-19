@@ -64,7 +64,7 @@ or:
 ### Caching
 The app caches all of the relevant files and resources/assets after initial service worker installation. Although all of the required assets for offline usability are cached during this process, if the service worker encounters new uncached files during fetch request interception, the server response is served to the user and additionally, the new uncached response is also cached.
 
-The caching strategy is cache-only for resources/assets that will never change during app usage, while server API responses with all app data that can change are cached using a network-first strategy.
+The caching strategy is cache-only for resources/assets that will never change during app usage, while server API responses with all app data that can change are cached using a network-first strategy. In the context of static resources/assets, all app views (.ejs files) are constant for all users, regardless of DB content or other factors and are therefore cached using the cache-only caching strategy (the relevant .js files do the API data fetching and DOM insertions).
 
 ### Mobile usage
 All features are available in a fully online setting.  
