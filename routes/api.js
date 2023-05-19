@@ -170,9 +170,15 @@ const searchByURI = (uri) =>
  *             chat:
  *               type: array
  *               description: The chat associated with the sighting
+ *             photo:
+ *               type: string
+ *               description: Base64 string of the image associated with the sighting
+ *             identificationURI:
+ *               type: string
+ *               description: DBpedia resource link of the bird identification
  *     responses:
- *       200:
- *         description: The sighting was added successfully
+ *       303:
+ *         description: Redirect after successful bird sighting creation
  *       400:
  *         description: Bad request - some required fields are missing or invalid
  *       500:
@@ -317,7 +323,7 @@ router.get("/post", async (req, res) => {
 
 /**
  * @swagger
- * /message:
+ * /api/message:
  *   post:
  *     summary: Add a message to a post's chat.
  *     description: Adds a message to the chat of the post with the given ID.
@@ -401,6 +407,38 @@ router.post("/message", async (req, res) => {
  * @swagger
  * /api/edit:
  *   post:
+ *     summary: Edit the bird identification of a Post.
+ *     description: Edit the bird identification of the post with the given ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the bird sighting post to edit.
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               identificationURI:
+ *                 type: string
+ *                 description: DBpedia resource link of the bird identification
+ *     responses:
+ *       '303':
+ *         description: Redirect after successful edit
+ *       '500':
+ *         description: INTERNAL SERVER ERROR
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Status of the request.
+ *                   example: INTERNAL SERVER ERROR
  */
 router.post("/edit", async (req, res) => {
   const { identificationURI } = req.body;

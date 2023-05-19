@@ -48,7 +48,7 @@ The project created is a bird sightseeing application which allows users to add 
 - All online features are available offline with a few exceptions mentioned in **Mobile usage** and **Desktop usage**.
 
 ## Submission and Assessment relevant information
-- Code documentation has been provided through a combination of Swagger documentation and inline comments.
+- Code documentation has been provided through a combination of Swagger API documentation and inline comments. When running the server locally on **port 3000**, the API documentation is available under this url: [http://localhost:3000/api-docs/#/](http://localhost:3000/api-docs/#/). If running on a different port, first change **line 20** in **app.js** to reflect the different post number.
 - Screenshots of the application in most use-cases/scenarios have been provided and are available in the **/screenshots** directory.
 - This directory is a Git repository. GitHub was used as the online version control environment. The GitHub repository is available under this link: [https://github.com/Jed-g/intelligent-web-project](https://github.com/Jed-g/intelligent-web-project). For obvious reasons, the repository is private, for access please email: jgolebiewski1@sheffield.ac.uk
 
