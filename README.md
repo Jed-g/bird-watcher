@@ -8,9 +8,9 @@ cd <path_to_directory>
 ```
 2. Install all necessary packages
 ```
-npm i
+yarn install
 ```
-3. Set MongoDB connection URI as an environment variable in the **.env** file (or leave as is if you want to test with an example DB set up for demo purposes)
+3. Set MongoDB connection URI as an environment variable in the **.env** file
 ```
 MONGODB_CONNECTION_URI=<MongoDB connection URI>
 ```
@@ -18,24 +18,23 @@ MONGODB_CONNECTION_URI=<MongoDB connection URI>
 ## Running the production server (you can use this one for testing)
 4. In a terminal window, run:
 ```
-npm start
+yarn start
 ```
 
 ## Running the development server
 4. Open two terminal windows, in one run:
 ```
-npm run dev
+yarn dev
 ```
 5. And in the other run:
 ```
-npm run dev:css
+yarn dev:css
 ```
 The first command runs the server with **nodemon** (reloads the server upon any file changes) and the second runs a **TailwindCSS** compiler/tree-shaker (for style.css generation purposes and unused CSS code removal)
 
-## Additional online deployment for testing & demo purposes
-An additional demo deployment (hosted on render.com) has been provided for testing and is available here:  
-[https://bird-watcher-7loo.onrender.com/](https://bird-watcher-7loo.onrender.com/)  
-The app available under the above link could be slow at times due to a low-performance free tier being used.
+## Online deployment for testing & demo purposes
+A demo deployment has been provided for testing and is available here:  
+[https://birdwatcher.jgolebiewski.com/](https://birdwatcher.jgolebiewski.com/)  
 
 ## About the project
 The project created is a bird sightseeing application which allows users to add sightings of bird and make comments on other posts.
